@@ -36,6 +36,14 @@ export async function writeJsonFile<T>(filename: string, data: T): Promise<boole
   }
 }
 
+// --- High Performance In-Memory Cache (60s TTL, auto-invalidated on updates) ---
+const CACHE_TTL_MS = 60 * 1000;
+let cacheRates: { data: ContractorRate[]; expires: number } | null = null;
+let cacheExceptions: { data: ExceptionsData; expires: number } | null = null;
+let cacheTraining: { data: TrainingRecord[]; expires: number } | null = null;
+let cacheInvoiceRates: { data: InvoiceRateItem[]; expires: number } | null = null;
+let cacheCompletedPeriods: { data: string[]; expires: number } | null = null;
+
 // --- Specific Data Accessors ---
 
 // The raw JSON shapes
@@ -52,13 +60,18 @@ export interface ContractorRate {
 }
 
 export async function getRates(): Promise<ContractorRate[]> {
+  // 0. Return from in-memory cache if fresh
+  if (cacheRates && Date.now() < cacheRates.expires) {
+    return cacheRates.data;
+  }
+
   // 1. If Supabase is configured, fetch live synced rates from PostgreSQL
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
     if (supabase) {
       const { data, error } = await supabase.from('contractor_rates').select('*');
       if (!error && data && data.length > 0) {
-        return data.map(r => ({
+        const records = data.map(r => ({
           id: r.id,
           client: r.client,
           location: r.location,
@@ -66,6 +79,8 @@ export async function getRates(): Promise<ContractorRate[]> {
           dayType: r.day_type,
           rate: Number(r.rate) || 0,
         }));
+        cacheRates = { data: records, expires: Date.now() + CACHE_TTL_MS };
+        return records;
       }
     }
   }
@@ -90,10 +105,15 @@ export async function getRates(): Promise<ContractorRate[]> {
       }
     }
   }
+
+  cacheRates = { data: records, expires: Date.now() + CACHE_TTL_MS };
   return records;
 }
 
 export async function saveRates(rates: ContractorRate[]): Promise<boolean> {
+  // Invalidate cache immediately so new rates are active instantly
+  cacheRates = null;
+
   // 1. If Supabase is configured, sync to PostgreSQL
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
@@ -168,12 +188,22 @@ export interface ExceptionsData {
 }
 
 export async function getExceptionsData(): Promise<ExceptionsData> {
-  // 1. If Supabase is configured, fetch live exceptions
+  // 0. Return from in-memory cache if fresh
+  if (cacheExceptions && Date.now() < cacheExceptions.expires) {
+    return cacheExceptions.data;
+  }
+
+  // 1. If Supabase is configured, fetch live exceptions concurrently
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
     if (supabase) {
-      const { data: deds } = await supabase.from('contractor_deductions').select('*');
-      const { data: once } = await supabase.from('once_only_exceptions').select('*');
+      const [dedsRes, onceRes] = await Promise.all([
+        supabase.from('contractor_deductions').select('*'),
+        supabase.from('once_only_exceptions').select('*')
+      ]);
+
+      const deds = dedsRes.data;
+      const once = onceRes.data;
       
       if (deds && deds.length > 0) {
         const fixed: Deduction[] = [];
@@ -223,7 +253,9 @@ export async function getExceptionsData(): Promise<ExceptionsData> {
           note: o.note,
         }));
 
-        return { fixed, codeBased, onceOnly };
+        const result = { fixed, codeBased, onceOnly };
+        cacheExceptions = { data: result, expires: Date.now() + CACHE_TTL_MS };
+        return result;
       }
     }
   }
@@ -291,10 +323,14 @@ export async function getExceptionsData(): Promise<ExceptionsData> {
     }
   }
 
-  return { fixed, codeBased, onceOnly: onceOnly || [] };
+  const result = { fixed, codeBased, onceOnly: onceOnly || [] };
+  cacheExceptions = { data: result, expires: Date.now() + CACHE_TTL_MS };
+  return result;
 }
 
 export async function saveExceptionsData(data: ExceptionsData): Promise<boolean> {
+  cacheExceptions = null;
+
   // 1. If Supabase is configured, sync deductions
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
@@ -434,6 +470,11 @@ export interface TrainingRecord {
 type RawTrainingData = Record<string, Record<string, Record<string, any>>>;
 
 export async function getTraining(): Promise<TrainingRecord[]> {
+  // 0. Return from in-memory cache if fresh
+  if (cacheTraining && Date.now() < cacheTraining.expires) {
+    return cacheTraining.data;
+  }
+
   // 1. If Supabase is configured, fetch live synced training records
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
@@ -472,6 +513,7 @@ export async function getTraining(): Promise<TrainingRecord[]> {
           return getLatestDate(b) - getLatestDate(a);
         });
 
+        cacheTraining = { data: records, expires: Date.now() + CACHE_TTL_MS };
         return records;
       }
     }
@@ -534,10 +576,13 @@ export async function getTraining(): Promise<TrainingRecord[]> {
     return getLatestDate(b) - getLatestDate(a);
   });
 
+  cacheTraining = { data: records, expires: Date.now() + CACHE_TTL_MS };
   return records;
 }
 
 export async function saveTraining(records: TrainingRecord[]): Promise<boolean> {
+  cacheTraining = null;
+
   // 1. If Supabase is configured, sync to PostgreSQL
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
@@ -619,20 +664,30 @@ export async function saveTraining(records: TrainingRecord[]): Promise<boolean> 
 }
 
 export async function getCompletedPayPeriods(): Promise<string[]> {
+  if (cacheCompletedPeriods && Date.now() < cacheCompletedPeriods.expires) {
+    return cacheCompletedPeriods.data;
+  }
+
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
     if (supabase) {
       const { data } = await supabase.from('completed_pay_periods').select('period_key').eq('completed', true);
       if (data) {
-        return data.map(d => d.period_key);
+        const res = data.map(d => d.period_key);
+        cacheCompletedPeriods = { data: res, expires: Date.now() + CACHE_TTL_MS };
+        return res;
       }
     }
   }
 
-  return await readJsonFile<string[]>('completed_pay_periods.json', []);
+  const res = await readJsonFile<string[]>('completed_pay_periods.json', []);
+  cacheCompletedPeriods = { data: res, expires: Date.now() + CACHE_TTL_MS };
+  return res;
 }
 
 export async function setPayPeriodCompleted(periodKey: string, completed: boolean): Promise<string[]> {
+  cacheCompletedPeriods = null;
+
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
     if (supabase) {
@@ -665,17 +720,23 @@ export interface InvoiceRateItem {
 export type RawInvoiceRates = Record<string, Record<string, { weekdays: number; weekend: number }>>;
 
 export async function getInvoiceRates(): Promise<InvoiceRateItem[]> {
+  if (cacheInvoiceRates && Date.now() < cacheInvoiceRates.expires) {
+    return cacheInvoiceRates.data;
+  }
+
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
     if (supabase) {
       const { data, error } = await supabase.from('invoice_rates').select('*');
       if (!error && data && data.length > 0) {
-        return data.map(r => ({
+        const items = data.map(r => ({
           client: r.client,
           location: r.location,
           weekdays: Number(r.weekdays) || 0,
           weekend: Number(r.weekend) || 0,
         }));
+        cacheInvoiceRates = { data: items, expires: Date.now() + CACHE_TTL_MS };
+        return items;
       }
     }
   }
@@ -698,10 +759,13 @@ export async function getInvoiceRates(): Promise<InvoiceRateItem[]> {
       });
     }
   }
+  cacheInvoiceRates = { data: items, expires: Date.now() + CACHE_TTL_MS };
   return items;
 }
 
 export async function saveInvoiceRate(client: string, location: string, weekdays: number, weekend: number): Promise<boolean> {
+  cacheInvoiceRates = null;
+
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseClient();
     if (supabase) {
