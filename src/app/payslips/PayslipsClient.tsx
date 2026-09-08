@@ -17,13 +17,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { 
   Download, UploadCloud, Calendar, Check, ChevronDown, 
-  DollarSign, Scissors, FileSpreadsheet, Users, Search, AlertCircle, AlertTriangle, ArrowDownRight, ArrowUpRight, Sparkles, Receipt, Building2, Hotel, X
+  DollarSign, Scissors, FileSpreadsheet, Users, Search, AlertCircle, AlertTriangle, ArrowDownRight, ArrowUpRight, Sparkles, Receipt, Building2, Hotel, X, CheckCircle2
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { generateExcel, generateStandaloneInvoiceExcel } from '@/lib/excelGenerator';
 import { syncTrainees } from '@/app/training/actions';
 import { generatePayPeriodSuggestions, PayCycleOption } from '@/lib/payPeriods';
-import { togglePeriodCompletion, fetchPayslipContext } from './actions';
+import { togglePeriodCompletion, fetchPayslipContext, markReleasedTraineesAsPaid } from './actions';
 import CalendarGrid from './CalendarGrid';
 
 // Module-level cache — survives React unmount/remount during SPA navigation
@@ -74,6 +74,29 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
 
   const ozoneRateInfo = context.invoiceRates?.find(r => r.location.toLowerCase() === 'ozone') || { weekdays: 30.0, weekend: 32.0 };
   const beyondRateInfo = context.invoiceRates?.find(r => r.location.toLowerCase() === 'beyond') || { weekdays: 32.0, weekend: 34.0 };
+
+  // Trainee Lifecycle State (Released -> PAID)
+  const [releasedTrainees, setReleasedTrainees] = useState<TrainingRecord[]>(initialContext.releasedTrainees || []);
+  const [isMarkingPaid, setIsMarkingPaid] = useState(false);
+  const [paidSuccessMessage, setPaidSuccessMessage] = useState('');
+  const [showExportPaidPrompt, setShowExportPaidPrompt] = useState(false);
+
+  const handleMarkTraineesPaid = async () => {
+    if (releasedTrainees.length === 0) return;
+    setIsMarkingPaid(true);
+    try {
+      await markReleasedTraineesAsPaid(releasedTrainees.map(t => t.name));
+      const count = releasedTrainees.length;
+      setReleasedTrainees([]);
+      setShowExportPaidPrompt(false);
+      setPaidSuccessMessage(`Successfully marked ${count} released trainee${count > 1 ? 's' : ''} as PAID in Training Tracker!`);
+      setTimeout(() => setPaidSuccessMessage(''), 8000);
+    } catch (err) {
+      console.error('Failed to mark trainees as paid:', err);
+    } finally {
+      setIsMarkingPaid(false);
+    }
+  };
 
   // Split Upload Menu State
   const [isUploadMenuOpen, setIsUploadMenuOpen] = useState(false);
@@ -362,6 +385,10 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
       : `ZB_${customLocationName || 'Solution'}_Payslips_${periodStart || 'Period'}_to_${periodEnd || 'End'}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
+
+    if (releasedTrainees.length > 0) {
+      setShowExportPaidPrompt(true);
+    }
   };
 
   const handleExportInvoice = async () => {
@@ -714,17 +741,69 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
       )}
 
       {/* Released Trainees Notice if any are pending payout */}
-      {context.releasedTrainees && context.releasedTrainees.length > 0 && (
-        <div className="flex items-center justify-between text-xs px-3.5 py-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 animate-in fade-in duration-200">
+      {releasedTrainees.length > 0 ? (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs px-3.5 py-2.5 rounded-lg bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-amber-100 text-amber-900 border-amber-300 font-semibold text-[11px]">
-              {context.releasedTrainees.length} Released Trainee{context.releasedTrainees.length > 1 ? 's' : ''}
+            <Badge variant="outline" className="bg-amber-100 text-amber-900 border-amber-300 font-bold text-[11px]">
+              {releasedTrainees.length} Released Trainee{releasedTrainees.length > 1 ? 's' : ''}
             </Badge>
             <span>Training pay is released and included in this run at $25.00/hr.</span>
           </div>
-          <Link href="/training" className="font-medium underline hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
-            Manage in Training Tracker &rarr;
-          </Link>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              disabled={isMarkingPaid}
+              onClick={handleMarkTraineesPaid}
+              className="h-7 px-2.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-none font-semibold shadow-xs cursor-pointer gap-1.5"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              {isMarkingPaid ? 'Marking...' : `Mark ${releasedTrainees.length} as PAID`}
+            </Button>
+            <Link href="/training" className="font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Manage Tracker &rarr;
+            </Link>
+          </div>
+        </div>
+      ) : paidSuccessMessage ? (
+        <div className="flex items-center justify-between text-xs px-3.5 py-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 text-emerald-800 dark:text-emerald-300 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <span className="font-semibold">{paidSuccessMessage}</span>
+          </div>
+          <button onClick={() => setPaidSuccessMessage('')} className="text-muted-foreground hover:text-foreground cursor-pointer">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : null}
+
+      {/* Post-Export Prompt to Mark Trainees as Paid */}
+      {showExportPaidPrompt && releasedTrainees.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs px-4 py-3 rounded-xl bg-blue-50/90 dark:bg-blue-950/40 border border-blue-300 dark:border-blue-800 text-blue-950 dark:text-blue-200 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-blue-600 shrink-0" />
+            <span>
+              <strong>Payslips Exported!</strong> Mark the <strong>{releasedTrainees.length} released trainees</strong> as <strong>PAID</strong> in the Training Tracker so they won&apos;t be paid again next fortnight?
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              disabled={isMarkingPaid}
+              onClick={handleMarkTraineesPaid}
+              className="h-7 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-none font-bold shadow-xs cursor-pointer gap-1.5"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              {isMarkingPaid ? 'Marking...' : 'Yes, Mark as PAID'}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowExportPaidPrompt(false)}
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              Dismiss
+            </Button>
+          </div>
         </div>
       )}
 
@@ -1083,15 +1162,25 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
                             )}
                           </TableCell>
                           <TableCell className="text-right">
-                            <span className={`font-bold text-sm ${
-                              isZeroPay 
-                                ? 'text-amber-600 dark:text-amber-400' 
-                                : s.netPay < 0 
-                                ? 'text-rose-600 dark:text-rose-400' 
-                                : 'text-emerald-600 dark:text-emerald-400'
-                            }`}>
-                              ${s.netPay.toFixed(2)}
-                            </span>
+                            <div className="flex flex-col items-end gap-0.5">
+                              <span className={`font-bold text-sm ${
+                                isZeroPay 
+                                  ? 'text-amber-600 dark:text-amber-400' 
+                                  : s.netPay <= 0 
+                                  ? 'text-slate-900 dark:text-slate-100' 
+                                  : 'text-emerald-600 dark:text-emerald-400'
+                              }`}>
+                                ${s.netPay.toFixed(2)}
+                              </span>
+                              {s.uncollectedDeductions && s.uncollectedDeductions > 0 && (
+                                <span 
+                                  title={`Deductions exceeded gross pay by $${s.uncollectedDeductions.toFixed(2)}. Net pay capped at $0.00.`}
+                                  className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold cursor-help inline-flex items-center gap-0.5"
+                                >
+                                  Uncollected: -${s.uncollectedDeductions.toFixed(2)}
+                                </span>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       );

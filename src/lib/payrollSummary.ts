@@ -23,6 +23,7 @@ export interface ContractorSummary {
   deductions: ContractorDeductionDetail[];
   totalDeductions: number;
   netPay: number;
+  uncollectedDeductions?: number;
   records: ProcessedRecord[];
 }
 
@@ -66,6 +67,31 @@ export function calculateContractorSummaries(
   periodEnd?: string
 ): ContractorSummary[] {
   const summaries: ContractorSummary[] = [];
+
+  // Determine each contractor's primary location (site with highest gross pay)
+  // Global/Fixed deductions set to "All" will only attach to their primary location to prevent double-deduction
+  const contractorLocGross = new Map<string, Map<string, number>>();
+  for (const r of records) {
+    if (r.Hours <= 0) continue;
+    const cName = cleanName(r['Sub Contractor']);
+    if (!contractorLocGross.has(cName)) contractorLocGross.set(cName, new Map());
+    const m = contractorLocGross.get(cName)!;
+    m.set(r.Location, (m.get(r.Location) || 0) + (Number(r.Total) || 0));
+  }
+
+  const contractorPrimaryLoc = new Map<string, string>();
+  for (const [cName, locMap] of contractorLocGross.entries()) {
+    let maxG = -1;
+    let bestLoc = '';
+    for (const [l, g] of locMap.entries()) {
+      if (g > maxG) {
+        maxG = g;
+        bestLoc = l;
+      }
+    }
+    contractorPrimaryLoc.set(cName, bestLoc);
+  }
+
   const locations = Array.from(new Set(records.map(r => r.Location))).sort();
 
   for (const loc of locations) {
@@ -75,6 +101,7 @@ export function calculateContractorSummaries(
     for (const emp of contractorNames) {
       const empData = locRecords.filter(r => r['Sub Contractor'] === emp);
       const cleanEmp = cleanName(emp);
+      const isPrimarySite = loc === (contractorPrimaryLoc.get(cleanEmp) || loc);
 
       let grossPay = 0;
       let totalHours = 0;
@@ -102,8 +129,8 @@ export function calculateContractorSummaries(
       // 1. Code-based Exceptions (e.g. ALL_PAY_MOD)
       const codeExcs = context.codeExceptions || [];
       const empCodeExc =
-        codeExcs.find(c => cleanName(c.name) === cleanEmp && locMatches(c.location, loc)) ||
-        codeExcs.find(c => cleanName(c.name) === cleanEmp && (!c.location || c.location === 'All'));
+        codeExcs.find(c => cleanName(c.name) === cleanEmp && c.location !== 'All' && locMatches(c.location, loc)) ||
+        (isPrimarySite ? codeExcs.find(c => cleanName(c.name) === cleanEmp && (!c.location || c.location === 'All')) : undefined);
 
       if (empCodeExc) {
         const targetCode = (empCodeExc.code || 'MOD').trim().toUpperCase();
@@ -120,10 +147,8 @@ export function calculateContractorSummaries(
 
         let deductionAmt = 0;
         if (empCodeExc.rule === 'DEDUCT_EXCEPT_CODE') {
-          // Deduct everything except targetCode pay
           deductionAmt = Math.max(0, grossPay - targetCodePay);
         } else if (empCodeExc.rule === 'DEDUCT_SPECIFIC_CODE') {
-          // Deduct only targetCode pay
           deductionAmt = targetCodePay;
         }
 
@@ -135,11 +160,11 @@ export function calculateContractorSummaries(
           });
         }
       } else {
-        // 2. Fixed Amount Exceptions
+        // 2. Fixed Amount Exceptions (Global deductions applied only once to primary site)
         const fixedList = context.deductions || [];
-        const empDed =
-          fixedList.find(d => cleanName(d.name) === cleanEmp && locMatches(d.location, loc)) ||
-          fixedList.find(d => cleanName(d.name) === cleanEmp && (!d.location || d.location === 'All'));
+        const siteSpecificDed = fixedList.find(d => cleanName(d.name) === cleanEmp && d.location !== 'All' && locMatches(d.location, loc));
+        const globalDed = isPrimarySite ? fixedList.find(d => cleanName(d.name) === cleanEmp && (!d.location || d.location === 'All')) : undefined;
+        const empDed = siteSpecificDed || globalDed;
 
         if (empDed && empDed.amount !== 0) {
           deductionsList.push({
@@ -154,7 +179,9 @@ export function calculateContractorSummaries(
       const onceList = context.onceOnlyExceptions || [];
       const empOnce = onceList.filter(e => {
         if (cleanName(e.name) !== cleanEmp) return false;
-        if (e.location && e.location !== 'All' && !locMatches(e.location, loc)) return false;
+        const isGlobal = !e.location || e.location === 'All';
+        if (isGlobal && !isPrimarySite) return false;
+        if (!isGlobal && !locMatches(e.location, loc)) return false;
         if (e.payPeriod && !matchesPayPeriod(e.payPeriod, periodStart, periodEnd)) return false;
         return true;
       });
@@ -168,7 +195,15 @@ export function calculateContractorSummaries(
       }
 
       const totalDeductions = deductionsList.reduce((sum, d) => sum + d.amount, 0);
-      const netPay = Math.round((grossPay + totalDeductions) * 100) / 100;
+      const rawNet = Math.round((grossPay + totalDeductions) * 100) / 100;
+      
+      // Fix 4: If deductions exceed gross pay, cap net pay at $0.00 and track uncollected deduction balance
+      let netPay = rawNet;
+      let uncollectedDeductions = 0;
+      if (rawNet < 0) {
+        netPay = 0.00;
+        uncollectedDeductions = Math.round(Math.abs(rawNet) * 100) / 100;
+      }
 
       summaries.push({
         name: emp,
@@ -181,6 +216,7 @@ export function calculateContractorSummaries(
         deductions: deductionsList,
         totalDeductions: Math.round(totalDeductions * 100) / 100,
         netPay,
+        uncollectedDeductions: uncollectedDeductions > 0 ? uncollectedDeductions : undefined,
         records: empData,
       });
     }
