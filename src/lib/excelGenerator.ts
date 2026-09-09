@@ -215,7 +215,7 @@ export async function generateExcel(
 
   // 2. Location sheets with individual contractor payslip breakdowns
   const summaries = calculateContractorSummaries(data, context, periodStart, periodEnd);
-  const locations = Array.from(new Set(summaries.map(s => (s.location || '').trim() || 'General')));
+  const locations = Array.from(new Set(summaries.map(s => s.location)));
 
   for (const loc of locations) {
     const rawClean = (loc || '').trim().replace(/[:/*?[\]]/g, '');
@@ -239,7 +239,7 @@ export async function generateExcel(
       { width: 15 }, // Amount
     ];
 
-    const locSummaries = summaries.filter(s => ((s.location || '').trim() || 'General') === loc);
+    const locSummaries = summaries.filter(s => s.location === loc);
     let totalForSheet = 0.0;
     let currentRow = 2; // Start from row 2
 

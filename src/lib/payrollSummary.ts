@@ -125,10 +125,10 @@ export function calculateContractorSummaries(
     contractorPrimaryLoc.set(cName, bestLoc);
   }
 
-  const locations = Array.from(new Set(records.map(r => (r.Location || '').trim() || 'General'))).sort();
+  const locations = Array.from(new Set(records.map(r => r.Location))).sort();
 
   for (const loc of locations) {
-    const locRecords = records.filter(r => ((r.Location || '').trim() || 'General') === loc);
+    const locRecords = records.filter(r => r.Location === loc);
     const contractorNames = Array.from(new Set(locRecords.map(r => r['Sub Contractor']))).sort();
 
     for (const emp of contractorNames) {
