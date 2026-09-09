@@ -585,27 +585,6 @@ export function generatePayslips(rawData: any[], defaultLocation = ''): PayslipR
     if (location.includes("(S)")) role = "Stewarding";
     if (role === "MOD") payCondition = "MOD";
 
-    // Date logic for dayType
-    const dt = new Date(dateStr);
-    if (!isNaN(dt.getTime())) {
-      const day = dt.getDay(); // 0 = Sun, 6 = Sat
-      if (!payCondition) {
-        if (day === 6) payCondition = "Saturday";
-        else if (day === 0) payCondition = "Sunday";
-        else payCondition = "Mon - Fri";
-      } else {
-        if (payCondition === "OPH" && (day === 0 || day === 6)) {
-          payCondition = "Sat-Sun-OPH";
-        }
-        if (payCondition.includes("Mon - Fri")) {
-          if (day === 6) payCondition = "Saturday";
-          if (day === 0) payCondition = "Sunday";
-        }
-      }
-    } else if (!payCondition) {
-      payCondition = "Mon - Fri";
-    }
-
     records.push({
       'Timesheet date': dateStr,
       Location: location,
@@ -632,16 +611,35 @@ export function generatePayslips(rawData: any[], defaultLocation = ''): PayslipR
     }
     
     const role = r.Role;
-    const pcRaw = r.pc_raw || r['Pay Condition'];
+    const pcRaw = r.pc_raw || r['Pay Condition'] || '';
     r.pc_raw = pcRaw;
     
     let code = "";
     let dayType = "Mon - Fri";
     const pcUpper = pcRaw.toUpperCase();
     
-    if (pcUpper.includes("SAT")) dayType = "Saturday";
-    else if (pcUpper.includes("SUN")) dayType = "Sunday";
-    else if (pcUpper.includes("PUBLIC HOLIDAY")) dayType = "Public Holidays";
+    // Priority 1: Respect the timesheet's Pay Condition (SAT, SUN, M-F, PUBLIC HOLIDAY)
+    if (pcUpper.includes("SAT")) {
+      dayType = "Saturday";
+    } else if (pcUpper.includes("SUN")) {
+      dayType = "Sunday";
+    } else if (pcUpper.includes("PUBLIC HOLIDAY")) {
+      dayType = "Public Holidays";
+    } else if (pcUpper.includes("M-F") || pcUpper.includes("MON - FRI") || pcUpper.includes("MON-FRI")) {
+      dayType = "Mon - Fri";
+    } else if (r['Timesheet date']) {
+      // Priority 2: Only fallback to calendar date if pc_raw does not specify the day (e.g. ZBsolution)
+      const parts = r['Timesheet date'].split(/[-/]/).map(Number);
+      if (parts.length === 3) {
+        const dt = parts[0] > 100 ? new Date(parts[0], parts[1] - 1, parts[2]) : new Date(parts[2], parts[1] - 1, parts[0]);
+        if (!isNaN(dt.getTime())) {
+          const day = dt.getDay(); // 0 = Sun, 6 = Sat
+          if (day === 6) dayType = "Saturday";
+          else if (day === 0) dayType = "Sunday";
+          else dayType = "Mon - Fri";
+        }
+      }
+    }
     
     if (pcUpper.includes("SA 7-0") || role.toUpperCase().includes("SA 7-0") || extractedCode.includes("SA 7-0")) {
       code = "SA 7-0";
@@ -663,16 +661,6 @@ export function generatePayslips(rawData: any[], defaultLocation = ''): PayslipR
         } else if (role && ["PT1", "PT2", "PT3", "PTSUP", "CAS1", "CAS2", "CAS3", "MOD"].includes(role.toUpperCase())) {
           code = role.toUpperCase();
         }
-      }
-    }
-    
-    // Check Date logic for weekends (if date falls on weekend, force dayType)
-    if (r['Timesheet date']) {
-      const dt = new Date(r['Timesheet date']);
-      if (!isNaN(dt.getTime())) {
-        const day = dt.getDay(); // 0 = Sun, 6 = Sat
-        if (day === 6 && dayType === "Mon - Fri") dayType = "Saturday";
-        if (day === 0 && dayType === "Mon - Fri") dayType = "Sunday";
       }
     }
     
