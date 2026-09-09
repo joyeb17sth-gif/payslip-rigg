@@ -19,42 +19,30 @@ export const getWeekStart = (d: Date): Date => {
 };
 
 /**
- * Calculates the target release week date (YYYY-MM-DD) based on 5 completed training days.
- * - Majority in Week 1 (>= 3 of first 5 days): Release = Week1_start + 14 days
- * - Minority in Week 1: Release = latest majority week start + 14 days
+ * Calculates the target release week date (YYYY-MM-DD) based on the 3-week rule.
+ * Trainees must wait 3 weeks (21 days) after completing their required 5 training days.
  */
 export const calculateReleaseWeek = (trainingDates: string[]): string | undefined => {
   if (!trainingDates || trainingDates.length < REQUIRED_TRAINING_DAYS) return undefined;
   
-  const counts = new Map<number, number>(); // week start timestamp → count
-  for (const ds of trainingDates) {
-    const d = new Date(ds);
-    if (isNaN(d.getTime())) continue;
-    const ws = getWeekStart(d).getTime();
-    counts.set(ws, (counts.get(ws) || 0) + 1);
-  }
-  const sortedWeeks = [...counts.keys()].sort((a, b) => a - b);
-  if (sortedWeeks.length === 0) return undefined;
-  
-  const firstWeek = sortedWeeks[0];
-  let releaseTs: number;
-  if ((counts.get(firstWeek) || 0) >= 3) {
-    // Majority in week 1 → release at week 3 (week1 + 14 days)
-    releaseTs = firstWeek + 14 * 86400000;
-  } else if (sortedWeeks.length > 1) {
-    // Minority in week 1 → find the later week with the most days, release 2 weeks after it
-    const laterMajority = sortedWeeks.slice(1).reduce((best, w) =>
-      (counts.get(w) || 0) > (counts.get(best) || 0) ? w : best
-    , sortedWeeks[1]);
-    releaseTs = laterMajority + 14 * 86400000;
-  } else {
-    releaseTs = firstWeek + 14 * 86400000;
-  }
+  // Sort training dates chronologically
+  const sorted = [...trainingDates].sort();
+  // The completion date is the date the trainee completed their 5th day
+  const completionDateStr = sorted[REQUIRED_TRAINING_DAYS - 1] || sorted[sorted.length - 1];
+  const completionDate = new Date(completionDateStr);
+  if (isNaN(completionDate.getTime())) return undefined;
+
+  // 3rd week rule: Pay is held for 3 weeks (21 days) after 5-day completion
+  const releaseTs = completionDate.getTime() + 21 * 86400000;
   return new Date(releaseTs).toISOString().split('T')[0];
 };
 
 /**
- * Derives trainee status based on the 5-day marker regardless of hours worked.
+ * Derives trainee status based on the 5-day marker and 3-week waiting rule:
+ * - If marked PAID or pay_released: 'PAID'
+ * - If manually Released: 'Released'
+ * - If completed >= 5 days: 'Waiting' (holding for 3 weeks waiting period)
+ * - If < 5 days: 'Training'
  */
 export function deriveTraineeStatus(record: {
   pay_released?: boolean;
@@ -65,22 +53,27 @@ export function deriveTraineeStatus(record: {
   if (record.pay_released || record.status === 'PAID') {
     return 'PAID';
   }
+
+  const daysCount = record.training_dates ? record.training_dates.length : 0;
+  
+  // Under 5 days: still in training
+  if (daysCount < REQUIRED_TRAINING_DAYS) {
+    return 'Training';
+  }
+
+  // 5 days marker met: 3-week rule applies
+  // If target_release_week is set and still in the future, they MUST stay in Waiting
+  if (record.target_release_week) {
+    const releaseDate = new Date(record.target_release_week);
+    if (!isNaN(releaseDate.getTime()) && new Date() < releaseDate) {
+      return 'Waiting';
+    }
+  }
+
+  // If 3 weeks have passed and explicitly marked Released
   if (record.status === 'Released' || record.status === 'Ready to Pay') {
     return 'Released';
   }
 
-  const daysCount = record.training_dates ? record.training_dates.length : 0;
-  
-  // 5 days marker: transitions to Waiting (or Released if date reached) regardless of hours
-  if (daysCount >= REQUIRED_TRAINING_DAYS) {
-    if (record.target_release_week) {
-      const releaseDate = new Date(record.target_release_week);
-      if (!isNaN(releaseDate.getTime()) && new Date() >= releaseDate) {
-        return 'Released';
-      }
-    }
-    return 'Waiting';
-  }
-
-  return 'Training';
+  return 'Waiting';
 }
