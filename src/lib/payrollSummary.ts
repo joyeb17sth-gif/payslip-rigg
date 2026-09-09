@@ -41,17 +41,50 @@ export function locMatches(locA?: string, locB?: string): boolean {
   return a === b || a.includes(b) || b.includes(a);
 }
 
+import { normalizePayPeriodString, normalizeSingleDate, splitPeriodRange } from './payPeriodStorage';
+import { parseDateFromShort } from './payPeriods';
+
 export function matchesPayPeriod(excPeriod?: string, start?: string, end?: string): boolean {
   if (!excPeriod || excPeriod === 'All' || !start || !end) return true;
-  const pNorm = cleanName(excPeriod);
-  const currentKey = cleanName(`${start} to ${end}`);
-  const currentKeyHyphen = cleanName(`${start} - ${end}`);
-  return (
+
+  const normExc = normalizePayPeriodString(excPeriod);
+  const normStart = normalizeSingleDate(start);
+  const normEnd = normalizeSingleDate(end);
+
+  const pNorm = cleanName(normExc);
+  const currentKey = cleanName(`${normStart} to ${normEnd}`);
+  const currentKeyHyphen = cleanName(`${normStart} - ${normEnd}`);
+
+  if (
     pNorm === currentKey ||
     pNorm === currentKeyHyphen ||
-    pNorm.includes(cleanName(start)) ||
+    pNorm.includes(cleanName(normStart)) ||
     currentKey.includes(pNorm)
-  );
+  ) {
+    return true;
+  }
+
+  // Also check date overlap for equivalent pay cycle weeks (e.g. 31-Aug to 06-Sep vs 01-Sep to 07-Sep)
+  const excParts = splitPeriodRange(normExc);
+  if (excParts.length === 2) {
+    const eStart = parseDateFromShort(excParts[0]);
+    const eEnd = parseDateFromShort(excParts[1]);
+    const cStart = parseDateFromShort(normStart);
+    const cEnd = parseDateFromShort(normEnd);
+
+    if (eStart && eEnd && cStart && cEnd) {
+      const latestStart = Math.max(eStart.getTime(), cStart.getTime());
+      const earliestEnd = Math.min(eEnd.getTime(), cEnd.getTime());
+      const overlapDays = Math.max(0, Math.floor((earliestEnd - latestStart) / (1000 * 60 * 60 * 24)) + 1);
+
+      // If they overlap by 3 or more days in a 7-day or 14-day cycle, they belong to the same pay run
+      if (overlapDays >= 3) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 export interface PayslipCalculationContext {

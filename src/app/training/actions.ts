@@ -1,6 +1,7 @@
 'use server';
 
 import { getTraining, saveTraining, TrainingRecord } from '@/lib/data';
+import { calculateReleaseWeek, deriveTraineeStatus } from '@/lib/trainingUtils';
 import { revalidatePath } from 'next/cache';
 
 export async function getTrainingRecords() {
@@ -100,46 +101,6 @@ export async function syncTrainees(traineeRows: any[]) {
 
   if (fromCsv.size === 0) return;
 
-  // Port of Python's get_week_start: Saturday–Friday cycle, returns the Saturday start of the week
-  const getWeekStart = (d: Date): Date => {
-    const daysSinceSat = (d.getDay() + 1) % 7; // Sun=0→1, Mon=1→2, ..., Sat=6→0
-    const sat = new Date(d);
-    sat.setDate(d.getDate() - daysSinceSat);
-    sat.setHours(0, 0, 0, 0);
-    return sat;
-  };
-
-  // Port of Python's calculate_target_release_week
-  // - Majority in Week 1 (>= 3 of first 5 days): Release = Week1_start + 14 days
-  // - Minority in Week 1: Release = latest majority week start + 14 days
-  const calculateReleaseWeek = (trainingDates: string[]): string | undefined => {
-    if (trainingDates.length < 5) return undefined; // Not enough days yet
-    const counts = new Map<number, number>(); // week start timestamp → count
-    for (const ds of trainingDates) {
-      const d = new Date(ds);
-      if (isNaN(d.getTime())) continue;
-      const ws = getWeekStart(d).getTime();
-      counts.set(ws, (counts.get(ws) || 0) + 1);
-    }
-    const sortedWeeks = [...counts.keys()].sort((a, b) => a - b);
-    if (sortedWeeks.length === 0) return undefined;
-    const firstWeek = sortedWeeks[0];
-    let releaseTs: number;
-    if ((counts.get(firstWeek) || 0) >= 3) {
-      // Majority in week 1 → release at week 3 (week1 + 14 days)
-      releaseTs = firstWeek + 14 * 86400000;
-    } else if (sortedWeeks.length > 1) {
-      // Minority in week 1 → find the later week with the most days, release 2 weeks after it
-      const laterMajority = sortedWeeks.slice(1).reduce((best, w) =>
-        (counts.get(w) || 0) > (counts.get(best) || 0) ? w : best
-      , sortedWeeks[1]);
-      releaseTs = laterMajority + 14 * 86400000;
-    } else {
-      releaseTs = firstWeek + 14 * 86400000;
-    }
-    return new Date(releaseTs).toISOString().split('T')[0];
-  };
-
   // --- Step 2: Upsert — CSV is source of truth for hours/dates ---
   for (const [, csv] of fromCsv) {
     const newDates = [...csv.dates].sort();
@@ -156,8 +117,22 @@ export async function syncTrainees(traineeRows: any[]) {
         const rw = calculateReleaseWeek(r.training_dates || []);
         if (rw) r.target_release_week = rw;
       }
+
+      // Automatically update status based on 5-day marker (unless already PAID or manually Released)
+      r.status = deriveTraineeStatus({
+        pay_released: r.pay_released || r.status === 'PAID',
+        status: r.status,
+        training_dates: r.training_dates,
+        target_release_week: r.target_release_week,
+      });
     } else {
       const releaseWeek = calculateReleaseWeek(newDates);
+      const status = deriveTraineeStatus({
+        pay_released: false,
+        training_dates: newDates,
+        target_release_week: releaseWeek,
+      });
+
       records.push({
         client: 'IHS',
         location: csv.location,
@@ -166,7 +141,7 @@ export async function syncTrainees(traineeRows: any[]) {
         role: csv.role,
         training_dates: newDates,
         total_hours: csv.totalHours,
-        status: 'Training',
+        status,
         ...(releaseWeek ? { target_release_week: releaseWeek } : {})
       });
     }

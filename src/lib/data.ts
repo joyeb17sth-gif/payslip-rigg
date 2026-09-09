@@ -469,6 +469,8 @@ export interface TrainingRecord {
 // The raw JSON shape
 type RawTrainingData = Record<string, Record<string, Record<string, any>>>;
 
+import { deriveTraineeStatus, calculateReleaseWeek, REQUIRED_TRAINING_DAYS } from './trainingUtils';
+
 export async function getTraining(): Promise<TrainingRecord[]> {
   // 0. Return from in-memory cache if fresh
   if (cacheTraining && Date.now() < cacheTraining.expires) {
@@ -481,19 +483,33 @@ export async function getTraining(): Promise<TrainingRecord[]> {
     if (supabase) {
       const { data, error } = await supabase.from('training_records').select('*');
       if (!error && data && data.length > 0) {
-        const records: TrainingRecord[] = data.map(t => ({
-          client: t.client,
-          location: t.location,
-          norm_name: t.norm_name,
-          name: t.name,
-          role: t.role || 'Trainee',
-          training_dates: Array.isArray(t.training_dates) ? t.training_dates : [],
-          total_hours: Number(t.total_hours) || 0,
-          weeks_since_completion: Number(t.weeks_since_completion) || 0,
-          status: t.status,
-          pay_released: Boolean(t.pay_released),
-          target_release_week: t.target_release_week || undefined,
-        }));
+        const records: TrainingRecord[] = data.map(t => {
+          const training_dates = Array.isArray(t.training_dates) ? t.training_dates : [];
+          let target_release_week = t.target_release_week || undefined;
+          if (!target_release_week && training_dates.length >= REQUIRED_TRAINING_DAYS) {
+            target_release_week = calculateReleaseWeek(training_dates);
+          }
+          const status = deriveTraineeStatus({
+            pay_released: Boolean(t.pay_released),
+            status: t.status,
+            training_dates,
+            target_release_week,
+          });
+
+          return {
+            client: t.client,
+            location: t.location,
+            norm_name: t.norm_name,
+            name: t.name,
+            role: t.role || 'Trainee',
+            training_dates,
+            total_hours: Number(t.total_hours) || 0,
+            weeks_since_completion: Number(t.weeks_since_completion) || 0,
+            status,
+            pay_released: status === 'PAID' || Boolean(t.pay_released),
+            target_release_week,
+          };
+        });
 
         // Sort latest dates first
         records.sort((a, b) => {
@@ -527,18 +543,18 @@ export async function getTraining(): Promise<TrainingRecord[]> {
     for (const location in raw[client]) {
       for (const normName in raw[client][location]) {
         const t = raw[client][location][normName];
-        
-        let status = t.status;
-        if (!status) {
-          if (t.pay_released) {
-            status = "PAID";
-          } else if (t.target_release_week) {
-             const releaseDate = new Date(t.target_release_week);
-             status = new Date() >= releaseDate ? "Released" : "Waiting";
-          } else {
-            status = "Training";
-          }
+        const training_dates = t.training_dates || [];
+        let target_release_week = t.target_release_week;
+        if (!target_release_week && training_dates.length >= REQUIRED_TRAINING_DAYS) {
+          target_release_week = calculateReleaseWeek(training_dates);
         }
+
+        const status = deriveTraineeStatus({
+          pay_released: Boolean(t.pay_released),
+          status: t.status,
+          training_dates,
+          target_release_week,
+        });
 
         records.push({
           client,
@@ -546,11 +562,11 @@ export async function getTraining(): Promise<TrainingRecord[]> {
           norm_name: normName,
           name: t.display_name || normName,
           role: t.role || 'Trainee',
-          training_dates: t.training_dates || [],
+          training_dates,
           total_hours: t.total_hours || 0,
           weeks_since_completion: t.weeks_since_completion || 0,
           pay_released: status === 'PAID',
-          target_release_week: t.target_release_week,
+          target_release_week,
           status,
         });
       }

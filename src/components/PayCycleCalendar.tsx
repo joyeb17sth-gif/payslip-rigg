@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { generatePayPeriodSuggestions, PayCycleOption } from '@/lib/payPeriods';
+import { getActivePayPeriod } from '@/lib/payPeriodStorage';
 import { Calendar } from 'lucide-react';
 
 function PeriodRow({ period, shade }: { period: PayCycleOption; shade: string }) {
@@ -25,7 +26,13 @@ function PeriodRow({ period, shade }: { period: PayCycleOption; shade: string })
 }
 
 export default function PayCycleCalendar({ compact = false }: { compact?: boolean }) {
-  const all = useMemo(() => generatePayPeriodSuggestions(), []);
+  const all = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const active = getActivePayPeriod();
+      return generatePayPeriodSuggestions(active.start, active.end);
+    }
+    return generatePayPeriodSuggestions('01-Sep', '07-Sep');
+  }, []);
 
   const ihsPeriods = useMemo(() => all.filter(p => p.client === 'IHS'), [all]);
   const zbPeriods = useMemo(() => all.filter(p => p.client === 'ZBsolution'), [all]);

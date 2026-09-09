@@ -125,8 +125,48 @@ export function getNextPayPeriod(period: PayCycleOption): PayCycleOption {
   };
 }
 
-export function generatePayPeriodSuggestions(): PayCycleOption[] {
+export function parseDateFromShort(str: string, year = 2026): Date | null {
+  if (!str) return null;
+  const parts = str.trim().split('-');
+  if (parts.length !== 2) return null;
+  const day = parseInt(parts[0], 10);
+  const mIdx = MONTH_NAMES.indexOf(parts[1]);
+  if (isNaN(day) || mIdx === -1) return null;
+  return new Date(year, mIdx, day);
+}
+
+export function generatePayPeriodSuggestions(activeStart?: string, activeEnd?: string): PayCycleOption[] {
   const suggestions: PayCycleOption[] = [];
+
+  // If an active custom period (like 01-Sep to 07-Sep) is provided, prepend it as the primary option
+  if (activeStart && activeEnd) {
+    const sDate = parseDateFromShort(activeStart) || new Date(2026, 8, 1);
+    const eDate = parseDateFromShort(activeEnd) || new Date(2026, 8, 7);
+
+    suggestions.push({
+      client: 'IHS',
+      type: 'Weekly',
+      label: `${activeStart} to ${activeEnd}`,
+      startFormatted: activeStart,
+      endFormatted: activeEnd,
+      fullLabel: `IHS (Weekly): ${activeStart} to ${activeEnd} · Selected`,
+      startDate: sDate,
+      endDate: eDate,
+      periodKey: `ACTIVE-IHS-${activeStart}-${activeEnd}`,
+    });
+
+    suggestions.push({
+      client: 'ZBsolution',
+      type: 'Fortnightly',
+      label: `${activeStart} to ${activeEnd}`,
+      startFormatted: activeStart,
+      endFormatted: activeEnd,
+      fullLabel: `ZBsolution: ${activeStart} to ${activeEnd} · Selected`,
+      startDate: sDate,
+      endDate: eDate,
+      periodKey: `ACTIVE-ZB-${activeStart}-${activeEnd}`,
+    });
+  }
 
   // Generate current + upcoming cycles starting from the 31-Aug anchor
   for (let offset = 0; offset <= 7; offset++) {
@@ -139,17 +179,20 @@ export function generatePayPeriodSuggestions(): PayCycleOption[] {
     const sF = formatDateShort(ihsStart);
     const eF = formatDateShort(ihsEnd);
 
-    suggestions.push({
-      client: 'IHS',
-      type: 'Weekly',
-      label: `${sF} to ${eF}`,
-      startFormatted: sF,
-      endFormatted: eF,
-      fullLabel: `IHS (Weekly): ${sF} to ${eF}`,
-      startDate: ihsStart,
-      endDate: ihsEnd,
-      periodKey: `IHS-${formatDateISO(ihsStart)}`,
-    });
+    // Don't duplicate if already added via activeStart/activeEnd
+    if (!activeStart || !activeEnd || sF !== activeStart || eF !== activeEnd) {
+      suggestions.push({
+        client: 'IHS',
+        type: 'Weekly',
+        label: `${sF} to ${eF}`,
+        startFormatted: sF,
+        endFormatted: eF,
+        fullLabel: `IHS (Weekly): ${sF} to ${eF}`,
+        startDate: ihsStart,
+        endDate: ihsEnd,
+        periodKey: `IHS-${formatDateISO(ihsStart)}`,
+      });
+    }
 
     // ZBsolution: Fortnightly (14-day cycles)
     if (offset % 2 === 0) {
@@ -161,17 +204,19 @@ export function generatePayPeriodSuggestions(): PayCycleOption[] {
       const zSF = formatDateShort(zbStart);
       const zEF = formatDateShort(zbEnd);
 
-      suggestions.push({
-        client: 'ZBsolution',
-        type: 'Fortnightly',
-        label: `${zSF} to ${zEF}`,
-        startFormatted: zSF,
-        endFormatted: zEF,
-        fullLabel: `ZBsolution (Fortnight): ${zSF} to ${zEF}`,
-        startDate: zbStart,
-        endDate: zbEnd,
-        periodKey: `ZB-${formatDateISO(zbStart)}`,
-      });
+      if (!activeStart || !activeEnd || zSF !== activeStart || zEF !== activeEnd) {
+        suggestions.push({
+          client: 'ZBsolution',
+          type: 'Fortnightly',
+          label: `${zSF} to ${zEF}`,
+          startFormatted: zSF,
+          endFormatted: zEF,
+          fullLabel: `ZBsolution (Fortnight): ${zSF} to ${zEF}`,
+          startDate: zbStart,
+          endDate: zbEnd,
+          periodKey: `ZB-${formatDateISO(zbStart)}`,
+        });
+      }
     }
   }
 

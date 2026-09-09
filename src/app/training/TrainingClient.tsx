@@ -137,7 +137,7 @@ export default function TrainingClient({ initialData }: { initialData: TrainingR
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{trainingCount}</div>
-            <p className="text-[11px] text-muted-foreground mt-1">Accumulating required days/hours</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Accumulating 5 training days</p>
           </CardContent>
         </Card>
 
@@ -148,7 +148,7 @@ export default function TrainingClient({ initialData }: { initialData: TrainingR
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{waitingCount}</div>
-            <p className="text-[11px] text-muted-foreground mt-1">Holding for target release date</p>
+            <p className="text-[11px] text-muted-foreground mt-1">5 days complete · holding for release</p>
           </CardContent>
         </Card>
 
@@ -171,7 +171,7 @@ export default function TrainingClient({ initialData }: { initialData: TrainingR
               <TableRow>
                 <TableHead className="w-[220px]">Trainee Name</TableHead>
                 <TableHead>Location</TableHead>
-                <TableHead className="text-center">Total Days</TableHead>
+                <TableHead className="text-center">Days (Target 5)</TableHead>
                 <TableHead className="text-center">Total Hours</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Release Week</TableHead>
@@ -199,7 +199,11 @@ export default function TrainingClient({ initialData }: { initialData: TrainingR
                       <TableCell className="max-w-[200px] truncate" title={row.location}>
                         {row.location}
                       </TableCell>
-                      <TableCell className="text-center">{row.training_dates?.length || 0}</TableCell>
+                      <TableCell className="text-center font-mono font-semibold">
+                        <span className={(row.training_dates?.length || 0) >= 5 ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-600 dark:text-slate-400'}>
+                          {row.training_dates?.length || 0} / 5
+                        </span>
+                      </TableCell>
                       <TableCell className="text-center font-medium">{row.total_hours || 0}</TableCell>
                       <TableCell>
                         <select

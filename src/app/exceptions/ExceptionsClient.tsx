@@ -8,8 +8,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Save, Search, Plus, Trash2, CheckCircle2, Code2, DollarSign, Zap, CalendarDays } from 'lucide-react';
+import { Save, Search, Plus, Trash2, CheckCircle2, Code2, DollarSign, Zap, CalendarDays, RefreshCw } from 'lucide-react';
 import { generatePayPeriodSuggestions } from '@/lib/payPeriods';
+import { 
+  getActivePayPeriod, 
+  setActivePayPeriod, 
+  PAY_PERIOD_EVENT, 
+  normalizeSingleDate, 
+  formatPeriodCompact 
+} from '@/lib/payPeriodStorage';
+import { useEffect } from 'react';
 
 const CLIENT_LOCATIONS: Record<string, string[]> = {
   IHS: ['ACE', 'Caption', 'Hyatt Regency', 'Park Hyatt', 'Q-Station', 'Shangrila'],
@@ -29,9 +37,59 @@ export default function ExceptionsClient({
   const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const allPeriods = useMemo(() => generatePayPeriodSuggestions(), []);
+  
+  // Pay Period state synchronized with Payslip Generator
+  const [periodStart, setPeriodStart] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return getActivePayPeriod().start || '01-Sep';
+    }
+    return '01-Sep';
+  });
+  const [periodEnd, setPeriodEnd] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return getActivePayPeriod().end || '07-Sep';
+    }
+    return '07-Sep';
+  });
+
+  const allPeriods = useMemo(
+    () => generatePayPeriodSuggestions(periodStart, periodEnd), 
+    [periodStart, periodEnd]
+  );
   const recentIhs = useMemo(() => allPeriods.filter(p => p.client === 'IHS').slice(0, 1), [allPeriods]);
   const recentZb = useMemo(() => allPeriods.filter(p => p.client === 'ZBsolution').slice(0, 1), [allPeriods]);
+
+  // Real-time synchronization across pages and tabs
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const custom = e as CustomEvent<{ start: string; end: string }>;
+      if (custom.detail) {
+        if (custom.detail.start) setPeriodStart(custom.detail.start);
+        if (custom.detail.end) setPeriodEnd(custom.detail.end);
+      } else {
+        const active = getActivePayPeriod();
+        if (active.start) setPeriodStart(active.start);
+        if (active.end) setPeriodEnd(active.end);
+      }
+    };
+    window.addEventListener(PAY_PERIOD_EVENT, handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener(PAY_PERIOD_EVENT, handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  const handlePeriodChange = (start: string, end: string) => {
+    setPeriodStart(start);
+    setPeriodEnd(end);
+    setActivePayPeriod(start, end);
+  };
+
+  const handleSyncAllOnceOnlyToActive = () => {
+    const activeLabel = `${periodStart} to ${periodEnd}`;
+    setOnceOnlyData(prev => prev.map(o => ({ ...o, payPeriod: activeLabel })));
+  };
 
   const filteredFixed = fixedData.filter(d => 
     d.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -128,8 +186,8 @@ export default function ExceptionsClient({
       if (field === 'client') {
         const nextLocs = CLIENT_LOCATIONS[value as string] || ['ACE'];
         const nextLoc = nextLocs.includes(o.location) ? o.location : nextLocs[0];
-        const clientPers = allPeriods.filter(p => p.client === value);
-        const nextPeriod = clientPers[0]?.label || '';
+        const activeLabel = (periodStart && periodEnd) ? `${periodStart} to ${periodEnd}` : '01-Sep to 07-Sep';
+        const nextPeriod = o.payPeriod || activeLabel;
         return { ...o, client: value as string, location: nextLoc, payPeriod: nextPeriod };
       }
       if (field === 'type') {
@@ -151,7 +209,9 @@ export default function ExceptionsClient({
     const defaultLoc = 'Hyatt Regency';
     const locNames = contractorDirectory?.[defaultClient]?.[defaultLoc] || [];
     const defaultName = locNames[0] || '';
-    const defaultPeriod = allPeriods.find(p => p.client === defaultClient)?.label || '31-Aug to 06-Sep';
+    const defaultPeriod = (periodStart && periodEnd)
+      ? `${periodStart} to ${periodEnd}`
+      : '01-Sep to 07-Sep';
 
     setOnceOnlyData(prev => [
       {
@@ -225,23 +285,66 @@ export default function ExceptionsClient({
             </Button>
           </div>
           {/* Pay period reference */}
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2">
-            <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
-              <CalendarDays className="h-3.5 w-3.5" />
-              <span>Pay period reference:</span>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex items-center gap-1.5 text-foreground font-semibold">
+                <CalendarDays className="h-4 w-4 text-amber-600" />
+                <span>Active Pay Period:</span>
+              </div>
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 font-mono font-bold text-amber-700 dark:text-amber-300 shadow-2xs">
+                <span>{periodStart}</span>
+                <span className="text-muted-foreground">–</span>
+                <span>{periodEnd}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handlePeriodChange('01-Sep', '07-Sep')}
+                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
+                    periodStart === '01-Sep' && periodEnd === '07-Sep'
+                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  01-Sep–07-Sep
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePeriodChange('31-Aug', '06-Sep')}
+                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
+                    periodStart === '31-Aug' && periodEnd === '06-Sep'
+                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  31-Aug–06-Sep
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePeriodChange('07-Sep', '13-Sep')}
+                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
+                    periodStart === '07-Sep' && periodEnd === '13-Sep'
+                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  07-Sep–13-Sep
+                </button>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 items-center">
-              <span className="font-bold text-teal-700 dark:text-teal-400">IHS</span>
-              {recentIhs.map(p => (
-                <span key={p.periodKey} className="font-mono text-teal-900 dark:text-teal-200">{p.startFormatted}–{p.endFormatted}</span>
-              ))}
-            </div>
-            <span className="text-muted-foreground/40">·</span>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 items-center">
-              <span className="font-bold text-violet-700 dark:text-violet-400">ZBS</span>
-              {recentZb.map(p => (
-                <span key={p.periodKey} className="font-mono text-violet-900 dark:text-violet-200">{p.startFormatted}–{p.endFormatted}</span>
-              ))}
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleSyncAllOnceOnlyToActive}
+                className="h-7 text-[11px] font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-950/40 gap-1.5 px-2.5 cursor-pointer rounded-lg border border-amber-200/70 dark:border-amber-900/60"
+                title={`Set pay period of all once-only exceptions to ${periodStart} to ${periodEnd}`}
+              >
+                <RefreshCw className="h-3 w-3" />
+                Sync all exceptions to {periodStart}–{periodEnd}
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -272,7 +375,7 @@ export default function ExceptionsClient({
                     const isPositive = o.amount >= 0;
                     const locs = CLIENT_LOCATIONS[o.client] || ['ACE'];
                     const clientPeriods = allPeriods.filter(p => p.client === o.client);
-                    const currentPeriodVal = o.payPeriod || clientPeriods[0]?.label || '';
+                    const currentPeriodVal = o.payPeriod || (periodStart && periodEnd ? `${periodStart} to ${periodEnd}` : clientPeriods[0]?.label || '');
 
                     return (
                       <TableRow key={o.id}>
@@ -318,13 +421,26 @@ export default function ExceptionsClient({
                           <select
                             value={currentPeriodVal}
                             onChange={(e) => handleUpdateOnceOnly(o.id, 'payPeriod', e.target.value)}
-                            className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs font-mono font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                            className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs font-mono font-semibold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
                           >
-                            {clientPeriods.map((p, idx) => (
-                              <option key={p.periodKey} value={p.label}>
-                                {p.startFormatted}–{p.endFormatted} {idx === 0 ? '· Current' : ''}
+                            {periodStart && periodEnd && (
+                              <option value={`${periodStart} to ${periodEnd}`}>
+                                {periodStart}–{periodEnd} · Active Run
                               </option>
-                            ))}
+                            )}
+                            {o.payPeriod && o.payPeriod !== `${periodStart} to ${periodEnd}` && !clientPeriods.some(p => p.label === o.payPeriod) && (
+                              <option value={o.payPeriod}>
+                                {o.payPeriod}
+                              </option>
+                            )}
+                            {clientPeriods.map((p) => {
+                              if (periodStart && periodEnd && p.label === `${periodStart} to ${periodEnd}`) return null;
+                              return (
+                                <option key={p.periodKey} value={p.label}>
+                                  {p.startFormatted}–{p.endFormatted}
+                                </option>
+                              );
+                            })}
                           </select>
                         </TableCell>
 

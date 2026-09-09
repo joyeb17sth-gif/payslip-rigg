@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { generateExcel, generateStandaloneInvoiceExcel } from '@/lib/excelGenerator';
 import { syncTrainees } from '@/app/training/actions';
 import { generatePayPeriodSuggestions, PayCycleOption } from '@/lib/payPeriods';
+import { getActivePayPeriod, setActivePayPeriod, PAY_PERIOD_EVENT } from '@/lib/payPeriodStorage';
 import { togglePeriodCompletion, fetchPayslipContext, markReleasedTraineesAsPaid } from './actions';
 import CalendarGrid from './CalendarGrid';
 
@@ -30,7 +31,7 @@ import CalendarGrid from './CalendarGrid';
 const cache: { data: PayslipRecord[]; periodStart: string; periodEnd: string } = {
   data: [],
   periodStart: '01-Sep',
-  periodEnd: '',
+  periodEnd: '07-Sep',
 };
 
 interface PayslipsClientProps {
@@ -47,11 +48,21 @@ interface PayslipsClientProps {
 
 export default function PayslipsClient({ context: initialContext }: PayslipsClientProps) {
   const [context, setContext] = useState(initialContext);
-  const [suggestions] = useState<PayCycleOption[]>(() => generatePayPeriodSuggestions());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [data, setData] = useState<PayslipRecord[]>(cache.data);
-  const [periodStart, setPeriodStart] = useState<string>(cache.periodStart);
-  const [periodEnd, setPeriodEnd] = useState<string>(cache.periodEnd);
+  const [periodStart, setPeriodStart] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return getActivePayPeriod().start || cache.periodStart;
+    }
+    return cache.periodStart;
+  });
+  const [periodEnd, setPeriodEnd] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return getActivePayPeriod().end || cache.periodEnd;
+    }
+    return cache.periodEnd;
+  });
+  const suggestions = useMemo(() => generatePayPeriodSuggestions(periodStart, periodEnd), [periodStart, periodEnd]);
   const [completedPeriods, setCompletedPeriods] = useState<string[]>(
     initialContext.completedPeriods || []
   );
@@ -135,10 +146,36 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
     weekend: weekendRate,
   }), [weekdayRate, weekendRate]);
 
-  // Keep cache in sync whenever state changes
+  // Keep cache and persistent storage in sync whenever state changes
   useEffect(() => { cache.data = data; }, [data]);
-  useEffect(() => { cache.periodStart = periodStart; }, [periodStart]);
-  useEffect(() => { cache.periodEnd = periodEnd; }, [periodEnd]);
+  useEffect(() => {
+    cache.periodStart = periodStart;
+    cache.periodEnd = periodEnd;
+    if (periodStart && periodEnd) {
+      setActivePayPeriod(periodStart, periodEnd);
+    }
+  }, [periodStart, periodEnd]);
+
+  // Listen for pay period changes across tabs and other pages (e.g. Exceptions)
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const custom = e as CustomEvent<{ start: string; end: string }>;
+      if (custom.detail) {
+        if (custom.detail.start) setPeriodStart(custom.detail.start);
+        if (custom.detail.end) setPeriodEnd(custom.detail.end);
+      } else {
+        const active = getActivePayPeriod();
+        if (active.start) setPeriodStart(active.start);
+        if (active.end) setPeriodEnd(active.end);
+      }
+    };
+    window.addEventListener(PAY_PERIOD_EVENT, handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener(PAY_PERIOD_EVENT, handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
 
   // Refresh context on mount to ensure latest exceptions from disk
   useEffect(() => {
