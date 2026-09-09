@@ -91,6 +91,8 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
   const [isMarkingPaid, setIsMarkingPaid] = useState(false);
   const [paidSuccessMessage, setPaidSuccessMessage] = useState('');
   const [showExportPaidPrompt, setShowExportPaidPrompt] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const handleMarkTraineesPaid = async () => {
     if (releasedTrainees.length === 0) return;
@@ -396,35 +398,44 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
   };
 
   const handleExport = async () => {
-    if (data.length === 0) return;
-    const processedData: ProcessedRecord[] = data.map(d => ({
-      ...d,
-      Rate: d.Rate === 'Not Found' ? 0 : Number(d.Rate),
-      Total: Number(d.Total) || 0
-    }));
+    if (data.length === 0 || isExporting) return;
+    setIsExporting(true);
+    setExportError(null);
+    try {
+      const processedData: ProcessedRecord[] = data.map(d => ({
+        ...d,
+        Rate: d.Rate === 'Not Found' ? 0 : Number(d.Rate),
+        Total: Number(d.Total) || 0
+      }));
 
-    const buffer = await generateExcel(
-      processedData, 
-      context, 
-      periodStart, 
-      periodEnd, 
-      isCurrentIHS ? null : activeRateSchedule, 
-      isCurrentIHS ? '' : customLocationName,
-      isCurrentIHS
-    );
-    
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = isCurrentIHS
-      ? `IHS_Payslips_${periodStart || 'Period'}_to_${periodEnd || 'End'}.xlsx`
-      : `ZB_${customLocationName || 'Solution'}_Payslips_${periodStart || 'Period'}_to_${periodEnd || 'End'}.xlsx`;
-    a.click();
-    URL.revokeObjectURL(url);
+      const buffer = await generateExcel(
+        processedData, 
+        context, 
+        periodStart, 
+        periodEnd, 
+        isCurrentIHS ? null : activeRateSchedule, 
+        isCurrentIHS ? '' : customLocationName,
+        isCurrentIHS
+      );
+      
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = isCurrentIHS
+        ? `IHS_Payslips_${periodStart || 'Period'}_to_${periodEnd || 'End'}.xlsx`
+        : `ZB_${customLocationName || 'Solution'}_Payslips_${periodStart || 'Period'}_to_${periodEnd || 'End'}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
 
-    if (releasedTrainees.length > 0) {
-      setShowExportPaidPrompt(true);
+      if (releasedTrainees.length > 0) {
+        setShowExportPaidPrompt(true);
+      }
+    } catch (err: any) {
+      console.error('Failed to export payslips:', err);
+      setExportError(err?.message || 'Failed to generate Excel file');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -744,9 +755,22 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
             <Sparkles className="h-3.5 w-3.5 text-amber-500" />
             Load Sample
           </Button>
-          <Button onClick={handleExport} disabled={data.length === 0} className="h-9 gap-2 text-xs bg-rose-600 hover:bg-rose-700 text-white shadow-sm cursor-pointer">
-            <Download className="h-4 w-4" />
-            Export Results
+          <Button 
+            onClick={handleExport} 
+            disabled={data.length === 0 || isExporting} 
+            className="h-9 gap-2 text-xs bg-rose-600 hover:bg-rose-700 text-white shadow-sm cursor-pointer font-semibold"
+          >
+            {isExporting ? (
+              <>
+                <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Generating...</span>
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                <span>Generate Payslips (Excel)</span>
+              </>
+            )}
           </Button>
           <Button 
             onClick={handleExportInvoice} 
@@ -759,6 +783,19 @@ export default function PayslipsClient({ context: initialContext }: PayslipsClie
           </Button>
         </div>
       </div>
+
+      {/* Export Error Alert */}
+      {exportError && (
+        <div className="flex items-center justify-between text-xs px-3.5 py-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 text-rose-800 dark:text-rose-300 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
+            <span><strong>Export Error:</strong> {exportError}</span>
+          </div>
+          <button onClick={() => setExportError(null)} className="text-muted-foreground hover:text-foreground cursor-pointer">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Interactive Pay Period Monthly Calendar Grid */}
       {isCalendarOpen && (

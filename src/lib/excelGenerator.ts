@@ -215,14 +215,15 @@ export async function generateExcel(
 
   // 2. Location sheets with individual contractor payslip breakdowns
   const summaries = calculateContractorSummaries(data, context, periodStart, periodEnd);
-  const locations = Array.from(new Set(summaries.map(s => s.location)));
+  const locations = Array.from(new Set(summaries.map(s => (s.location || '').trim() || 'General')));
 
   for (const loc of locations) {
-    const safeLoc = loc.substring(0, 31).replace(/[:/*?[\]]/g, ''); // Excel sheet names max 31 chars
+    const rawClean = (loc || '').trim().replace(/[:/*?[\]]/g, '');
+    const safeLoc = rawClean.substring(0, 28).trim() || 'General';
     let sheetTitle = safeLoc;
     let count = 1;
-    while (wb.worksheets.some(ws => ws.name === sheetTitle)) {
-      sheetTitle = `${safeLoc.substring(0, 28)}_${count}`;
+    while (wb.worksheets.some(ws => ws.name.toLowerCase() === sheetTitle.toLowerCase())) {
+      sheetTitle = `${safeLoc.substring(0, 25)}_${count}`;
       count++;
     }
 
@@ -238,7 +239,7 @@ export async function generateExcel(
       { width: 15 }, // Amount
     ];
 
-    const locSummaries = summaries.filter(s => s.location === loc);
+    const locSummaries = summaries.filter(s => ((s.location || '').trim() || 'General') === loc);
     let totalForSheet = 0.0;
     let currentRow = 2; // Start from row 2
 
