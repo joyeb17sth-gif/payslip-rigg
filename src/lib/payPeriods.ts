@@ -10,15 +10,15 @@ export interface PayCycleOption {
   periodKey: string; // e.g. "IHS-2026-09-07"
 }
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+export const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function formatDateShort(d: Date): string {
+export function formatDateShort(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
   const month = MONTH_NAMES[d.getMonth()];
   return `${day}-${month}`;
 }
 
-function formatDateISO(d: Date): string {
+export function formatDateISO(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -127,12 +127,54 @@ export function getNextPayPeriod(period: PayCycleOption): PayCycleOption {
 
 export function parseDateFromShort(str: string, year = 2026): Date | null {
   if (!str) return null;
-  const parts = str.trim().split('-');
-  if (parts.length !== 2) return null;
-  const day = parseInt(parts[0], 10);
-  const mIdx = MONTH_NAMES.indexOf(parts[1]);
-  if (isNaN(day) || mIdx === -1) return null;
-  return new Date(year, mIdx, day);
+  const clean = str.trim();
+  // Handle ISO format YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+    const parts = clean.split('-');
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) return new Date(y, m, d);
+  }
+  const parts = clean.split(/[-/\s.]+/);
+  if (parts.length >= 2) {
+    const day = parseInt(parts[0], 10);
+    const mStr = parts[1].toLowerCase();
+    const mIdx = MONTH_NAMES.findIndex(m => m.toLowerCase().startsWith(mStr.substring(0, 3)));
+    if (!isNaN(day) && mIdx !== -1) {
+      return new Date(year, mIdx, day);
+    }
+  }
+  return null;
+}
+
+/**
+ * Converts "2026-09-08" -> "08-Sep"
+ */
+export function isoToShortDate(iso: string): string {
+  if (!iso) return '';
+  const parts = iso.trim().split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+      return formatDateShort(new Date(y, m, d));
+    }
+  }
+  return iso;
+}
+
+/**
+ * Converts "08-Sep" -> "2026-09-08"
+ */
+export function shortDateToISO(str: string, year = 2026): string {
+  if (!str) return '';
+  const clean = str.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
+  const d = parseDateFromShort(clean, year);
+  if (!d) return '';
+  return formatDateISO(d);
 }
 
 export function generatePayPeriodSuggestions(activeStart?: string, activeEnd?: string): PayCycleOption[] {

@@ -9,13 +9,19 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Save, Search, Plus, Trash2, CheckCircle2, Code2, DollarSign, Zap, CalendarDays, RefreshCw } from 'lucide-react';
-import { generatePayPeriodSuggestions } from '@/lib/payPeriods';
+import { 
+  generatePayPeriodSuggestions, 
+  isoToShortDate, 
+  shortDateToISO, 
+  parseDateFromShort 
+} from '@/lib/payPeriods';
 import { 
   getActivePayPeriod, 
   setActivePayPeriod, 
   PAY_PERIOD_EVENT, 
   normalizeSingleDate, 
-  formatPeriodCompact 
+  formatPeriodCompact,
+  splitPeriodRange 
 } from '@/lib/payPeriodStorage';
 import { useEffect } from 'react';
 
@@ -56,8 +62,12 @@ export default function ExceptionsClient({
     () => generatePayPeriodSuggestions(periodStart, periodEnd), 
     [periodStart, periodEnd]
   );
-  const recentIhs = useMemo(() => allPeriods.filter(p => p.client === 'IHS').slice(0, 1), [allPeriods]);
-  const recentZb = useMemo(() => allPeriods.filter(p => p.client === 'ZBsolution').slice(0, 1), [allPeriods]);
+  const presetPeriods = useMemo(() => [
+    { start: '08-Sep', end: '15-Sep' },
+    { start: '01-Sep', end: '07-Sep' },
+    { start: '31-Aug', end: '06-Sep' },
+    { start: '07-Sep', end: '13-Sep' },
+  ], []);
 
   // Real-time synchronization across pages and tabs
   useEffect(() => {
@@ -284,52 +294,66 @@ export default function ExceptionsClient({
               Add Once-Only Exception
             </Button>
           </div>
-          {/* Pay period reference */}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5">
-            <div className="flex flex-wrap items-center gap-2.5">
+          {/* Pay period reference with full date picker support (choose any date in between) */}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+            <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-1.5 text-foreground font-semibold">
                 <CalendarDays className="h-4 w-4 text-amber-600" />
                 <span>Active Pay Period:</span>
               </div>
-              <div className="flex items-center gap-1 bg-white dark:bg-slate-950 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-800 font-mono font-bold text-amber-700 dark:text-amber-300 shadow-2xs">
-                <span>{periodStart}</span>
-                <span className="text-muted-foreground">–</span>
-                <span>{periodEnd}</span>
+
+              {/* Native Date Pickers: Choose ANY date in between */}
+              <div className="flex items-center gap-2 bg-white dark:bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">From</span>
+                  <input
+                    type="date"
+                    value={shortDateToISO(periodStart)}
+                    onChange={(e) => {
+                      const short = isoToShortDate(e.target.value);
+                      if (short) handlePeriodChange(short, periodEnd);
+                    }}
+                    className="h-6 px-1.5 text-xs font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-50/60 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer"
+                    title="Choose any start date in between"
+                  />
+                  <span className="font-mono font-bold text-amber-700 dark:text-amber-300 text-xs">({periodStart})</span>
+                </div>
+
+                <span className="text-muted-foreground font-bold">–</span>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">To</span>
+                  <input
+                    type="date"
+                    value={shortDateToISO(periodEnd)}
+                    onChange={(e) => {
+                      const short = isoToShortDate(e.target.value);
+                      if (short) handlePeriodChange(periodStart, short);
+                    }}
+                    className="h-6 px-1.5 text-xs font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-50/60 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer"
+                    title="Choose any end date in between"
+                  />
+                  <span className="font-mono font-bold text-amber-700 dark:text-amber-300 text-xs">({periodEnd})</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handlePeriodChange('01-Sep', '07-Sep')}
-                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
-                    periodStart === '01-Sep' && periodEnd === '07-Sep'
-                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  01-Sep–07-Sep
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handlePeriodChange('31-Aug', '06-Sep')}
-                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
-                    periodStart === '31-Aug' && periodEnd === '06-Sep'
-                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  31-Aug–06-Sep
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handlePeriodChange('07-Sep', '13-Sep')}
-                  className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
-                    periodStart === '07-Sep' && periodEnd === '13-Sep'
-                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  07-Sep–13-Sep
-                </button>
+
+              {/* Quick cycle presets */}
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="text-[11px] text-muted-foreground font-medium mr-0.5">Presets:</span>
+                {presetPeriods.map((preset) => (
+                  <button
+                    key={`${preset.start}-${preset.end}`}
+                    type="button"
+                    onClick={() => handlePeriodChange(preset.start, preset.end)}
+                    className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
+                      periodStart === preset.start && periodEnd === preset.end
+                        ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`}
+                  >
+                    {preset.start}–{preset.end}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -356,7 +380,7 @@ export default function ExceptionsClient({
                   <TableHead className="w-[110px]">Client</TableHead>
                   <TableHead className="w-[150px]">Location</TableHead>
                   <TableHead className="w-[200px]">Contractor Name</TableHead>
-                  <TableHead className="w-[170px]">Pay Period</TableHead>
+                  <TableHead className="min-w-[220px]">Pay Period / Date</TableHead>
                   <TableHead className="w-[170px]">Adjustment Type</TableHead>
                   <TableHead className="w-[130px] text-right">Amount ($)</TableHead>
                   <TableHead className="min-w-[200px]">Reason / Notes</TableHead>
@@ -376,6 +400,14 @@ export default function ExceptionsClient({
                     const locs = CLIENT_LOCATIONS[o.client] || ['ACE'];
                     const clientPeriods = allPeriods.filter(p => p.client === o.client);
                     const currentPeriodVal = o.payPeriod || (periodStart && periodEnd ? `${periodStart} to ${periodEnd}` : clientPeriods[0]?.label || '');
+                    const isCustomPeriod = Boolean(
+                      o.payPeriod && 
+                      o.payPeriod !== `${periodStart} to ${periodEnd}` && 
+                      !clientPeriods.some(p => p.label === o.payPeriod)
+                    );
+                    const parts = splitPeriodRange(o.payPeriod || '');
+                    const rowStart = parts[0] || periodStart;
+                    const rowEnd = parts.length > 1 ? parts[1] : parts[0] || periodEnd;
 
                     return (
                       <TableRow key={o.id}>
@@ -416,32 +448,105 @@ export default function ExceptionsClient({
                           />
                         </TableCell>
 
-                        {/* Pay Period select */}
-                        <TableCell>
-                          <select
-                            value={currentPeriodVal}
-                            onChange={(e) => handleUpdateOnceOnly(o.id, 'payPeriod', e.target.value)}
-                            className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs font-mono font-semibold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
-                          >
-                            {periodStart && periodEnd && (
-                              <option value={`${periodStart} to ${periodEnd}`}>
-                                {periodStart}–{periodEnd} · Active Run
-                              </option>
+                        {/* Pay Period / Custom Date in between */}
+                        <TableCell className="min-w-[220px]">
+                          <div className="flex flex-col gap-1.5">
+                            <div className="flex items-center gap-1">
+                              <select
+                                value={isCustomPeriod ? '__CUSTOM__' : currentPeriodVal}
+                                onChange={(e) => {
+                                  if (e.target.value === '__CUSTOM__') {
+                                    handleUpdateOnceOnly(o.id, 'payPeriod', periodStart);
+                                  } else {
+                                    handleUpdateOnceOnly(o.id, 'payPeriod', e.target.value);
+                                  }
+                                }}
+                                className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs font-mono font-semibold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                              >
+                                {periodStart && periodEnd && (
+                                  <option value={`${periodStart} to ${periodEnd}`}>
+                                    {periodStart}–{periodEnd} · Active Run
+                                  </option>
+                                )}
+                                {isCustomPeriod && (
+                                  <option value="__CUSTOM__">
+                                    📅 Custom: {o.payPeriod}
+                                  </option>
+                                )}
+                                {clientPeriods.map((p) => {
+                                  if (periodStart && periodEnd && p.label === `${periodStart} to ${periodEnd}`) return null;
+                                  return (
+                                    <option key={p.periodKey} value={p.label}>
+                                      {p.startFormatted}–{p.endFormatted}
+                                    </option>
+                                  );
+                                })}
+                                {!isCustomPeriod && (
+                                  <option value="__CUSTOM__">📅 Choose custom date in between...</option>
+                                )}
+                              </select>
+
+                              {/* Native Date Picker trigger */}
+                              <div 
+                                className="relative inline-flex items-center justify-center h-8 w-8 rounded-md border border-input bg-background hover:bg-amber-50 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-300 cursor-pointer overflow-hidden shrink-0 shadow-2xs" 
+                                title="Pick any date in between"
+                              >
+                                <CalendarDays className="h-4 w-4 text-amber-600 pointer-events-none" />
+                                <input
+                                  type="date"
+                                  value={shortDateToISO(rowStart)}
+                                  onChange={(e) => {
+                                    const short = isoToShortDate(e.target.value);
+                                    if (short) handleUpdateOnceOnly(o.id, 'payPeriod', short);
+                                  }}
+                                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                  title="Pick date in between"
+                                />
+                              </div>
+                            </div>
+
+                            {/* In-between Date Pickers (Shown when custom date is chosen) */}
+                            {isCustomPeriod && (
+                              <div className="flex items-center gap-1.5 text-[11px] bg-amber-50/70 dark:bg-amber-950/40 px-2 py-1 rounded-md border border-amber-200 dark:border-amber-900/50">
+                                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">From</span>
+                                <input
+                                  type="date"
+                                  value={shortDateToISO(rowStart)}
+                                  onChange={(e) => {
+                                    const short = isoToShortDate(e.target.value);
+                                    if (short) {
+                                      const newPeriod = rowEnd && rowEnd !== rowStart && rowEnd !== short ? `${short} to ${rowEnd}` : short;
+                                      handleUpdateOnceOnly(o.id, 'payPeriod', newPeriod);
+                                    }
+                                  }}
+                                  className="h-5 px-1 text-[11px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800 rounded focus:outline-none cursor-pointer"
+                                  title="Pick start date in between"
+                                />
+                                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase">To</span>
+                                <input
+                                  type="date"
+                                  value={shortDateToISO(rowEnd)}
+                                  onChange={(e) => {
+                                    const short = isoToShortDate(e.target.value);
+                                    if (short) {
+                                      const newPeriod = rowStart && rowStart !== short ? `${rowStart} to ${short}` : short;
+                                      handleUpdateOnceOnly(o.id, 'payPeriod', newPeriod);
+                                    }
+                                  }}
+                                  className="h-5 px-1 text-[11px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800 rounded focus:outline-none cursor-pointer"
+                                  title="Pick end date in between"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateOnceOnly(o.id, 'payPeriod', `${periodStart} to ${periodEnd}`)}
+                                  className="ml-auto text-slate-400 hover:text-rose-600 font-bold px-1"
+                                  title="Reset to Active Run"
+                                >
+                                  ✕
+                                </button>
+                              </div>
                             )}
-                            {o.payPeriod && o.payPeriod !== `${periodStart} to ${periodEnd}` && !clientPeriods.some(p => p.label === o.payPeriod) && (
-                              <option value={o.payPeriod}>
-                                {o.payPeriod}
-                              </option>
-                            )}
-                            {clientPeriods.map((p) => {
-                              if (periodStart && periodEnd && p.label === `${periodStart} to ${periodEnd}`) return null;
-                              return (
-                                <option key={p.periodKey} value={p.label}>
-                                  {p.startFormatted}–{p.endFormatted}
-                                </option>
-                              );
-                            })}
-                          </select>
+                          </div>
                         </TableCell>
 
                         {/* Adjustment Type select */}

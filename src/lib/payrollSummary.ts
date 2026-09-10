@@ -64,22 +64,31 @@ export function matchesPayPeriod(excPeriod?: string, start?: string, end?: strin
     return true;
   }
 
-  // Also check date overlap for equivalent pay cycle weeks (e.g. 31-Aug to 06-Sep vs 01-Sep to 07-Sep)
+  // Check date overlap or single date containment
   const excParts = splitPeriodRange(normExc);
-  if (excParts.length === 2) {
-    const eStart = parseDateFromShort(excParts[0]);
-    const eEnd = parseDateFromShort(excParts[1]);
-    const cStart = parseDateFromShort(normStart);
-    const cEnd = parseDateFromShort(normEnd);
+  const cStart = parseDateFromShort(normStart);
+  const cEnd = parseDateFromShort(normEnd);
 
-    if (eStart && eEnd && cStart && cEnd) {
-      const latestStart = Math.max(eStart.getTime(), cStart.getTime());
-      const earliestEnd = Math.min(eEnd.getTime(), cEnd.getTime());
-      const overlapDays = Math.max(0, Math.floor((earliestEnd - latestStart) / (1000 * 60 * 60 * 24)) + 1);
+  if (cStart && cEnd) {
+    if (excParts.length === 2) {
+      const eStart = parseDateFromShort(excParts[0]);
+      const eEnd = parseDateFromShort(excParts[1]);
 
-      // If they overlap by 3 or more days in a 7-day or 14-day cycle, they belong to the same pay run
-      if (overlapDays >= 3) {
-        return true;
+      if (eStart && eEnd) {
+        const latestStart = Math.max(eStart.getTime(), cStart.getTime());
+        const earliestEnd = Math.min(eEnd.getTime(), cEnd.getTime());
+        // If they overlap with the pay cycle, they match
+        if (latestStart <= earliestEnd) {
+          return true;
+        }
+      }
+    } else if (excParts.length === 1) {
+      // Single date in between (e.g. "04-Sep")
+      const singleDate = parseDateFromShort(excParts[0]);
+      if (singleDate) {
+        if (singleDate.getTime() >= cStart.getTime() && singleDate.getTime() <= cEnd.getTime()) {
+          return true;
+        }
       }
     }
   }
