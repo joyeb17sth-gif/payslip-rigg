@@ -196,8 +196,28 @@ async function seed() {
     }
   }
 
-  // 5. Seed Completed Pay Periods
-  console.log('5️⃣ Migrating Completed Pay Periods...');
+  // 5. Seed Once-Only Exceptions
+  console.log('5️⃣ Migrating Once-Only Exceptions...');
+  const onceOnlyJson = await readJson('once_only_exceptions.json');
+  if (Array.isArray(onceOnlyJson) && onceOnlyJson.length > 0) {
+    const rows = onceOnlyJson.map(o => ({
+      id: o.id || `once-${Date.now()}-${Math.random()}`,
+      client: o.client,
+      location: o.location,
+      name: o.name,
+      type: o.type,
+      amount: parseFloat(o.amount) || 0,
+      pay_period: o.payPeriod || null,
+      note: o.note || '',
+      updated_at: new Date().toISOString()
+    }));
+    const { error } = await supabase.from('once_only_exceptions').upsert(rows, { onConflict: 'id' });
+    if (error) console.error('   ❌ Error:', error.message);
+    else console.log(`   ✅ Migrated ${rows.length} once-only exceptions.\n`);
+  }
+
+  // 6. Seed Completed Pay Periods
+  console.log('6️⃣ Migrating Completed Pay Periods...');
   const periods = await readJson('completed_pay_periods.json');
   if (Array.isArray(periods) && periods.length > 0) {
     const rows = periods.map(p => ({

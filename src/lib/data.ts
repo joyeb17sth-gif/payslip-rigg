@@ -2,15 +2,27 @@ import fs from 'fs/promises';
 import path from 'path';
 import { isSupabaseConfigured, getSupabaseClient } from './supabase';
 
-// The parent directory of the Next.js app is the root of the project where the JSON files live
-const DATA_DIR = path.join(process.cwd(), '..');
+// File locations: checks local project data/ folder (for Vercel/cloud) and parent root (for local bot)
+async function getExistingFilePath(filename: string): Promise<string> {
+  const parentPath = path.join(process.cwd(), '..', filename);
+  try {
+    await fs.access(parentPath);
+    return parentPath;
+  } catch {}
 
-const getFilePath = (filename: string) => path.join(DATA_DIR, filename);
+  const localDataPath = path.join(process.cwd(), 'data', filename);
+  try {
+    await fs.access(localDataPath);
+    return localDataPath;
+  } catch {}
+
+  return parentPath;
+}
 
 export async function readJsonFile<T>(filename: string, defaultData: T): Promise<T> {
   try {
-    const filePath = getFilePath(filename);
-    const data = await fs.readFile(filePath, 'utf-8');
+    const filePath = await getExistingFilePath(filename);
+    const data = await fs.readFile(/* turbopackIgnore: true */ filePath, 'utf-8');
     return JSON.parse(data) as T;
   } catch (error: any) {
     if (error.code === 'ENOENT') {
@@ -22,18 +34,27 @@ export async function readJsonFile<T>(filename: string, defaultData: T): Promise
 }
 
 export async function writeJsonFile<T>(filename: string, data: T): Promise<boolean> {
+  let written = false;
+
+  // 1. Write to parent directory if available (keeps local python bot in sync)
   try {
-    const filePath = getFilePath(filename);
-    // Write to a temporary file first, then rename to avoid corruption
-    const tempPath = `${filePath}.tmp`;
+    const parentPath = path.join(process.cwd(), '..', filename);
+    const tempPath = `${parentPath}.tmp`;
     await fs.writeFile(tempPath, JSON.stringify(data, null, 4), 'utf-8');
-    await fs.rename(tempPath, filePath);
-    return true;
-  } catch (error) {
-    // If running in a read-only serverless environment (e.g. Vercel), this may fail gracefully
-    console.warn(`Local file write skipped for ${filename} (may be on read-only serverless):`, error);
-    return false;
-  }
+    await fs.rename(tempPath, parentPath);
+    written = true;
+  } catch {}
+
+  // 2. Also write to bundled data directory
+  try {
+    const localDataPath = path.join(process.cwd(), 'data', filename);
+    const tempPath = `${localDataPath}.tmp`;
+    await fs.writeFile(tempPath, JSON.stringify(data, null, 4), 'utf-8');
+    await fs.rename(tempPath, localDataPath);
+    written = true;
+  } catch {}
+
+  return written;
 }
 
 // --- High Performance In-Memory Cache (60s TTL, auto-invalidated on updates) ---
@@ -204,12 +225,11 @@ export async function getExceptionsData(): Promise<ExceptionsData> {
 
       const deds = dedsRes.data;
       const once = onceRes.data;
-      
-      if (deds && deds.length > 0) {
+      if ((deds && deds.length > 0) || (once && once.length > 0)) {
         const fixed: Deduction[] = [];
         const codeBased: CodeException[] = [];
 
-        for (const d of deds) {
+        for (const d of (deds || [])) {
           if (d.rule_type === 'fixed') {
             fixed.push({
               id: d.id,

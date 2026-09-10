@@ -1,0 +1,1208 @@
+{
+    "IHS": {
+        "ACE": {
+            "AMANANSARI (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "AMANANSARI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "AMANANSARI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "ASMANITHAPA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "ASMANITHAPA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ASMANITHAPA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "GANESHKHADKA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "GAURISHAGAURISHA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "GAURISHAGAURISHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "GAURISHAGAURISHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JELISHANIROULA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "JELISHANIROULA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JELISHANIROULA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MERINASHRESTHA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "MERINASHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "MERINASHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NAYANABASUKALA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "NAYANABASUKALA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NAYANABASUKALA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NIMESHSINGHTHAKURI (PT2)": {
+                "Mon - Fri": 28,
+                "Saturday": 32,
+                "Sunday": 37,
+                "Public Holidays": 0
+            },
+            "NIMESHSINGHTHAKURI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NIMESHSINGHTHAKURI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NIRJALBHATTRAI (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "NIRJALBHATTRAI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NIRJALBHATTRAI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PEMATAMANG (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "PEMATAMANG (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PEMATAMANG (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SUJITAS (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SUJITAS (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SUJITAS (SA 7-0)": {
+                "Allowance": 2.8
+            }
+        },
+        "Caption": {
+            "ANUSKASHRESTHA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "ANUSKASHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ANUSKASHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "DIPDAS (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "DIPDAS (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "DIPDAS (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "ESTHERSHRESTHA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "ESTHERSHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ESTHERSHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (PT2)": {
+                "Mon - Fri": 27,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "GANESHKHADKA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JHARANASHRESTHA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "JHARANASHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JHARANASHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NILOYSHUVO (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "NILOYSHUVO (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NILOYSHUVO (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PAMPHANEUPANE (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "PAMPHANEUPANE (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PAMPHANEUPANE (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PRANJAL(MEERAHAMEDFARUK) (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "PRANJAL(MEERAHAMEDFARUK) (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PRANJAL(MEERAHAMEDFARUK) (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SAHARAGURUNG (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "SAHARAGURUNG (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SAHARAGURUNG (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SAIJANMAINALI (PTSUP)": {
+                "Mon - Fri": 37.35,
+                "Saturday": 44.82,
+                "Sunday": 52.29,
+                "Public Holidays": 0
+            },
+            "SAIJANMAINALI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SAIJANMAINALI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SANDHAYAADHIKARI (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SANDHAYAADHIKARI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SANDHAYAADHIKARI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SIJANMAINALI (PTSUP)": {
+                "Mon - Fri": 35.03,
+                "Saturday": 43.49,
+                "Sunday": 52.42,
+                "Public Holidays": 0
+            },
+            "SIJANMAINALI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SIJANMAINALI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SIMRANPARAJULI (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 40
+            },
+            "SIMRANPARAJULI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SIMRANPARAJULI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SUMITKUMARJAISWAL (PT2)": {
+                "Mon - Fri": 0,
+                "Saturday": 0,
+                "Sunday": 0,
+                "Public Holidays": 0
+            },
+            "SUMITKUMARJAISWAL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SUMITKUMARJAISWAL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "UTSAVSHRESTHA (PTSUP)": {
+                "Mon - Fri": 32,
+                "Saturday": 44.82,
+                "Sunday": 52.29,
+                "Public Holidays": 0
+            },
+            "UTSAVSHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "UTSAVSHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            }
+        },
+        "Hyatt Regency": {
+            "AARONNGAU (PTSUP)": {
+                "Mon - Fri": 30.88,
+                "Saturday": 37.35,
+                "Sunday": 44.82,
+                "Public Holidays": 0
+            },
+            "AARONNGAU (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "AARONNGAU (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "AASHISHACHARYA (PT3)": {
+                "Mon - Fri": 27.7,
+                "Saturday": 33.48,
+                "Sunday": 40.05,
+                "Public Holidays": 0
+            },
+            "AASHISHACHARYA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "AASHISHACHARYA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "ABIGALMARIO (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "ABIGALMARIO (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ABIGALMARIO (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "ADILOSANANAIMASI (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "ADILOSANANAIMASI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ADILOSANANAIMASI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "ARPITAROY (PT2)": {
+                "Mon - Fri": 26.85,
+                "Saturday": 32.31,
+                "Sunday": 38.78,
+                "Public Holidays": 0
+            },
+            "ARPITAROY (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ARPITAROY (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "DEEPIKAPANDEY (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "DEEPIKAPANDEY (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "DEEPIKAPANDEY (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "ESTHERSHRESTHA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "ESTHERSHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "ESTHERSHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "FATEMASARKARBITHY (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "FATEMASARKARBITHY (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "FATEMASARKARBITHY (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "HARISINGH (MOD)": {
+                "Mon - Fri": 35.03,
+                "Saturday": 43.49,
+                "Sunday": 52.42,
+                "Public Holidays": 0
+            },
+            "HARISINGH (PTSUP)": {
+                "Mon - Fri": 32.35,
+                "Saturday": 0,
+                "Sunday": 46.95,
+                "Public Holidays": 0
+            },
+            "HARISINGH (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "HARISINGH (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JANNATULISLAMEFA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "JANNATULISLAMEFA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JANNATULISLAMEFA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JHARANASHRESTHA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "JHARANASHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JHARANASHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JINAPANTHA (MOD)": {
+                "Mon - Fri": 34.03,
+                "Saturday": 41.62,
+                "Sunday": 50.16,
+                "Public Holidays": 0
+            },
+            "JINAPANTHA (PTSUP)": {
+                "Mon - Fri": 29.88,
+                "Saturday": 0,
+                "Sunday": 0,
+                "Public Holidays": 0
+            },
+            "JINAPANTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JINAPANTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "KISHORPAUDEL (PT3)": {
+                "Mon - Fri": 27.7,
+                "Saturday": 33.48,
+                "Sunday": 40.05,
+                "Public Holidays": 0
+            },
+            "KISHORPAUDEL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "KISHORPAUDEL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NAPIMSAEHANG (PT2)": {
+                "Mon - Fri": 26.85,
+                "Saturday": 32.31,
+                "Sunday": 38.78,
+                "Public Holidays": 0
+            },
+            "NAPIMSAEHANG (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NAPIMSAEHANG (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NAVROOPKAUR (PT2)": {
+                "Mon - Fri": 26.85,
+                "Saturday": 32.31,
+                "Sunday": 38.78,
+                "Public Holidays": 0
+            },
+            "NAVROOPKAUR (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NAVROOPKAUR (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NILOYSHUVO (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "NILOYSHUVO (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NILOYSHUVO (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NINIDANIEL (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "NINIDANIEL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NINIDANIEL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PRANJAL(MEERAHAMEDFARUK) (PT2)": {
+                "Mon - Fri": 26.85,
+                "Saturday": 32.31,
+                "Sunday": 40.05,
+                "Public Holidays": 0
+            },
+            "PRANJAL(MEERAHAMEDFARUK) (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PRANJAL(MEERAHAMEDFARUK) (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PRATIMADAHAL (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "PRATIMADAHAL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PRATIMADAHAL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "RIJOWEN (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "RIJOWEN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "RIJOWEN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SAILAJAKHADKA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SAILAJAKHADKA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SAILAJAKHADKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SALINATULADHAR (PTSUP)": {
+                "Mon - Fri": 30.88,
+                "Saturday": 37.35,
+                "Sunday": 44.82,
+                "Public Holidays": 0
+            },
+            "SALINATULADHAR (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SALINATULADHAR (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SARITACHAULAGAIN (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SARITACHAULAGAIN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SARITACHAULAGAIN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SARITACHAULAGIAN (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SARITACHAULAGIAN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SARITACHAULAGIAN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SIDDHESHDHUMAL (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SIDDHESHDHUMAL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SIDDHESHDHUMAL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SONIYALAMA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SONIYALAMA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SONIYALAMA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "UTSAVSHRESTHA (PTSUP)": {
+                "Mon - Fri": 32,
+                "Saturday": 39.35,
+                "Sunday": 46.82,
+                "Public Holidays": 0
+            },
+            "UTSAVSHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "UTSAVSHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "YOGITATAMANG (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "YOGITATAMANG (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "YOGITATAMANG (SA 7-0)": {
+                "Allowance": 2.8
+            }
+        },
+        "Park Hyatt": {
+            "GANESHKHADKA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "GANESHKHADKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (SA 0-7)": {
+                "Allowance": 2.8
+            }
+        },
+        "Q-Station": {
+            "BHUWANRAJBARAL (CAS2)": {
+                "Mon - Fri": 33.31,
+                "Saturday": 38.78,
+                "Sunday": 52.29,
+                "Public Holidays": 0
+            },
+            "BHUWANRAJBARAL (CASSUP)": {
+                "Mon - Fri": 38.35,
+                "Saturday": 44.82,
+                "Sunday": 52.29,
+                "Public Holidays": 0
+            },
+            "BHUWANRAJBARAL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "BHUWANRAJBARAL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "CHRISTIANJOVIYANGOESWANTO (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "CHRISTIANJOVIYANGOESWANTO (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "CHRISTIANJOVIYANGOESWANTO (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "CHRISTIANJOVIYANGOEWANTO (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "CHRISTIANJOVIYANGOEWANTO (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "CHRISTIANJOVIYANGOEWANTO (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "FERDIF (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "FERDIF (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "FERDIF (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "HIMANSHIKHA (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "HIMANSHIKHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "HIMANSHIKHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "HIMANSHIKHAH (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "HIMANSHIKHAH (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "HIMANSHIKHAH (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MANISHASHRESTHA (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.75,
+                "Sunday": 0,
+                "Public Holidays": 0
+            },
+            "MANISHASHRESTHA (CASSUP)": {
+                "Mon - Fri": 38.35,
+                "Saturday": 44.82,
+                "Sunday": 52.29,
+                "Public Holidays": 0
+            },
+            "MANISHASHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "MANISHASHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MDZAKARIAHOSSAIN (CAS2)": {
+                "Mon - Fri": 32.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "MDZAKARIAHOSSAIN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MDZAKARIAHOSSAIN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NIRWANANIRWANA (CAS2)": {
+                "Mon - Fri": 33.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "NIRWANANIRWANA (CASSUP)": {
+                "Mon - Fri": 44.82,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "NIRWANANIRWANA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NIRWANANIRWANA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PREETIPREETI (CAS2)": {
+                "Mon - Fri": 33.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "PREETIPREETI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PREETIPREETI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SAINAMAHARJAN (CAS2)": {
+                "Mon - Fri": 33.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "SAINAMAHARJAN (CASSUP)": {
+                "Mon - Fri": 37.35,
+                "Saturday": 0,
+                "Sunday": 0,
+                "Public Holidays": 0
+            },
+            "SAINAMAHARJAN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SAINAMAHARJAN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SANDHYASHARMA (CAS2)": {
+                "Mon - Fri": 33.31,
+                "Saturday": 38.78,
+                "Sunday": 45.24,
+                "Public Holidays": 0
+            },
+            "SANDHYASHARMA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SANDHYASHARMA (SA 7-0)": {
+                "Allowance": 2.8
+            }
+        },
+        "Shangrila": {
+            "AMANANSARI (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "AMANANSARI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "AMANANSARI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "GANESHKHADKA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "GANESHKHADKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JELISHANIROULA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "JELISHANIROULA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JELISHANIROULA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "KARUNAADHIKARI (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "KARUNAADHIKARI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "KARUNAADHIKARI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MOAPETAVAKULA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "MOAPETAVAKULA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "MOAPETAVAKULA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MUSKANPUNMAGAR (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "MUSKANPUNMAGAR (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "MUSKANPUNMAGAR (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "NIMESHSINGHMAGAR (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "NIMESHSINGHMAGAR (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "NIMESHSINGHMAGAR (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "OMAIRAHMAD (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "OMAIRAHMAD (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "OMAIRAHMAD (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PABINADULAL (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "PABINADULAL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PABINADULAL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PASANGLAMA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "PASANGLAMA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PASANGLAMA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "RAJESHWARIKANDEL (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "RAJESHWARIKANDEL (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "RAJESHWARIKANDEL (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SANTOSHSHRESTHA (PT2)": {
+                "Mon - Fri": 25,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SANTOSHSHRESTHA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SANTOSHSHRESTHA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SUNIARAISAGA (PT2)": {
+                "Mon - Fri": 26,
+                "Saturday": 30,
+                "Sunday": 35,
+                "Public Holidays": 0
+            },
+            "SUNIARAISAGA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SUNIARAISAGA (SA 7-0)": {
+                "Allowance": 2.8
+            }
+        }
+    },
+    "ZBsolution": {
+        "ZBS": {
+            "AFSANAMINI": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "AFSANAMINI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "AFSANAMINI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "DIPIKA": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "DIPIKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "DIPIKA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JANIKA": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "JANIKA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JANIKA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JYOTIBHANDARI": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "JYOTIBHANDARI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JYOTIBHANDARI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "JYOTIBHATTARAI": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "JYOTIBHATTARAI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "JYOTIBHATTARAI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "KOMALDEEPKAUR": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "KOMALDEEPKAUR (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "KOMALDEEPKAUR (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "LAXMIWAIBA": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "LAXMIWAIBA (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "LAXMIWAIBA (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "MILANCHAPAGAIN": {
+                "Mon - Fri": 26,
+                "Saturday": 28,
+                "Sunday": 28,
+                "Public Holidays": 0
+            },
+            "MILANCHAPAGAIN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "MILANCHAPAGAIN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PRASHANTRANABHAT": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "PRASHANTRANABHAT (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PRASHANTRANABHAT (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PREETI": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "PREETI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PREETI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "PRITAMTHAPACHHETRI": {
+                "Mon - Fri": 26,
+                "Saturday": 28,
+                "Sunday": 28,
+                "Public Holidays": 30
+            },
+            "PRITAMTHAPACHHETRI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "PRITAMTHAPACHHETRI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SARISHMAKHATRI": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "SARISHMAKHATRI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SARISHMAKHATRI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SIMRANSIMRAN": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "SIMRANSIMRAN (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SIMRANSIMRAN (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SIVANI": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "SIVANI (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SIVANI (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "SUJATAKUNWAR": {
+                "Mon - Fri": 24,
+                "Saturday": 25,
+                "Sunday": 25,
+                "Public Holidays": 0
+            },
+            "SUJATAKUNWAR (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "SUJATAKUNWAR (SA 0-7)": {
+                "Allowance": 2.8
+            },
+            "YUBRAJ": {
+                "Mon - Fri": 26,
+                "Saturday": 28,
+                "Sunday": 28,
+                "Public Holidays": 30
+            },
+            "YUBRAJ (SA 7-0)": {
+                "Allowance": 2.8
+            },
+            "YUBRAJ (SA 0-7)": {
+                "Allowance": 2.8
+            }
+        }
+    }
+}

@@ -1,0 +1,421 @@
+{
+    "IHS": {
+        "Hyatt Regency - 161 Sussex St, Sydney ,NSW, 2000": {
+            "ADILOSANANAIMASI": {
+                "display_name": "Adi Losana Naimasi",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-21",
+                    "2026-08-24",
+                    "2026-08-25",
+                    "2026-08-26",
+                    "2026-08-27"
+                ],
+                "total_hours": 26.5,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-26",
+                "status": "PAID"
+            },
+            "ABIGALMARIO": {
+                "display_name": "Abigal Mario",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-04",
+                    "2026-08-05",
+                    "2026-08-06",
+                    "2026-08-12",
+                    "2026-08-13",
+                    "2026-08-19"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-28",
+                "status": "PAID"
+            },
+            "SARITACHAULAGAIN": {
+                "display_name": "Sarita Chaulagain",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-04",
+                    "2026-08-05",
+                    "2026-08-06",
+                    "2026-08-07",
+                    "2026-08-09",
+                    "2026-08-10",
+                    "2026-08-11"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-24",
+                "status": "PAID"
+            },
+            "SHANTITAMANG": {
+                "display_name": "Shanti Tamang",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-30",
+                    "2026-08-03",
+                    "2026-08-04",
+                    "2026-08-05"
+                ],
+                "total_hours": 20,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "SHOWCHANARAHMAN": {
+                "display_name": "Showchana Rahman",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-03",
+                    "2026-08-04",
+                    "2026-08-11",
+                    "2026-08-13"
+                ],
+                "total_hours": 15,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "NINIDANIEL": {
+                "display_name": "Nini Daniel",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-11",
+                    "2026-08-12",
+                    "2026-08-13",
+                    "2026-08-14",
+                    "2026-08-17"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-04-09",
+                "status": "PAID"
+            },
+            "SABINKHATIWADA": {
+                "display_name": "Sabin Khatiwada",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-11",
+                    "2026-08-12"
+                ],
+                "total_hours": 10,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "SIDDHESHDHUMAL": {
+                "display_name": "Siddhesh Dhumal",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-17",
+                    "2026-08-18",
+                    "2026-08-20",
+                    "2026-08-21",
+                    "2026-08-22"
+                ],
+                "total_hours": 18.5,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-11-09",
+                "status": "PAID"
+            }
+        },
+        "Caption By Hyatt Central Sydney": {
+            "JUMRAHJUMRAH": {
+                "display_name": "Jumrah Jumrah",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-24",
+                    "2026-08-25",
+                    "2026-08-26"
+                ],
+                "total_hours": 10,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "SWATISHRESTHA": {
+                "display_name": "Swati Shrestha",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-24",
+                    "2026-08-27",
+                    "2026-08-28",
+                    "2026-08-29"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "AASTHAMAYAMOKTAN": {
+                "display_name": "Aastha Maya Moktan",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-24",
+                    "2026-08-25",
+                    "2026-08-26",
+                    "2026-08-27"
+                ],
+                "total_hours": 13,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "ROSYPOKHREL": {
+                "display_name": "Rosy Pokhrel",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-24",
+                    "2026-08-25",
+                    "2026-08-27",
+                    "2026-08-28",
+                    "2026-08-30",
+                    "2026-08-31"
+                ],
+                "total_hours": 20,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Waiting",
+                "target_release_week": "2026-09-20"
+            },
+            "SUMITKUMARJAISWAL": {
+                "display_name": "Sumit Kumar Jaiswal",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-20",
+                    "2026-08-24",
+                    "2026-08-25",
+                    "2026-08-26",
+                    "2026-08-27",
+                    "2026-08-28"
+                ],
+                "total_hours": 18,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-27",
+                "status": "PAID"
+            },
+            "SARUTAMANG": {
+                "display_name": "Saru Tamang",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-25",
+                    "2026-08-26",
+                    "2026-08-27",
+                    "2026-08-28",
+                    "2026-08-29",
+                    "2026-08-30"
+                ],
+                "total_hours": 27,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Waiting",
+                "target_release_week": "2026-09-19"
+            },
+            "MANJUTHAPA": {
+                "display_name": "Manju Thapa",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-26",
+                    "2026-08-27",
+                    "2026-08-28",
+                    "2026-08-29"
+                ],
+                "total_hours": 11.5,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "PRADIPKUMARGLAN": {
+                "display_name": "Pradip Kumar Glan",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-26",
+                    "2026-08-27",
+                    "2026-08-28",
+                    "2026-08-30",
+                    "2026-08-31"
+                ],
+                "total_hours": 19,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Waiting",
+                "target_release_week": "2026-09-21"
+            },
+            "AMISHAALE": {
+                "display_name": "Amisha Ale",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-26",
+                    "2026-08-27"
+                ],
+                "total_hours": 7,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "REKHADEVKOTA": {
+                "display_name": "Rekha Devkota",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-26",
+                    "2026-08-27"
+                ],
+                "total_hours": 4.5,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "SIMRANDEEPKAUR": {
+                "display_name": "Simrandeep Kaur",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-27",
+                    "2026-08-28",
+                    "2026-08-30",
+                    "2026-08-31"
+                ],
+                "total_hours": 10,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "MONIMONI": {
+                "display_name": "Moni Moni",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-30",
+                    "2026-08-31"
+                ],
+                "total_hours": 5,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Training"
+            },
+            "APILAATRE": {
+                "display_name": "Apil Aatre",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-29",
+                    "2026-07-30",
+                    "2026-07-31",
+                    "2026-08-04",
+                    "2026-08-05"
+                ],
+                "total_hours": 20,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "status": "Waiting",
+                "target_release_week": "2026-08-26"
+            },
+            "PAMPHANEUPANE": {
+                "display_name": "Pampha Neupane",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-27",
+                    "2026-07-28",
+                    "2026-07-29",
+                    "2026-07-30",
+                    "2026-07-31"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-14",
+                "status": "PAID"
+            }
+        },
+        "QStation - Manly": {
+            "CHRISTIANJOVIYANGOESWANTO": {
+                "display_name": "Christian Joviyan Goeswanto",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-29",
+                    "2026-07-30",
+                    "2026-08-04",
+                    "2026-08-05",
+                    "2026-08-06"
+                ],
+                "total_hours": 28.5,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-14",
+                "status": "PAID"
+            }
+        },
+        "Ace Hotel - Wentworth Street": {
+            "MERINASHRESTHA": {
+                "display_name": "Merina Shrestha",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-21",
+                    "2026-07-22",
+                    "2026-07-28",
+                    "2026-07-29",
+                    "2026-08-03",
+                    "2026-08-04"
+                ],
+                "total_hours": 24.5,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-14",
+                "status": "PAID"
+            }
+        },
+        "Shangri-La - 176 Cumberland St, The Rocks ,NSW, 20": {
+            "MUSKANPUNMAGAR": {
+                "display_name": "Muskan Pun Magar",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-20",
+                    "2026-07-21",
+                    "2026-07-24",
+                    "2026-07-27"
+                ],
+                "total_hours": 20,
+                "weeks_since_completion": 0,
+                "pay_released": false,
+                "target_release_week": "2026-10-08",
+                "status": "Training"
+            },
+            "OMAIRAHMAD": {
+                "display_name": "Omair Ahmad",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-07-20",
+                    "2026-07-22",
+                    "2026-07-23",
+                    "2026-07-24",
+                    "2026-07-27"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-08-14",
+                "status": "PAID"
+            },
+            "SANTOSHSHRESTHA": {
+                "display_name": "Santosh Shrestha",
+                "role": "Trainee",
+                "training_dates": [
+                    "2026-08-11",
+                    "2026-08-12",
+                    "2026-08-13",
+                    "2026-08-18",
+                    "2026-08-20"
+                ],
+                "total_hours": 25,
+                "weeks_since_completion": 0,
+                "pay_released": true,
+                "target_release_week": "2026-04-09",
+                "status": "PAID"
+            }
+        }
+    }
+}

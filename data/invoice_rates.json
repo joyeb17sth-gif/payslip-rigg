@@ -1,0 +1,12 @@
+{
+    "ZB Solution": {
+        "Ozone": {
+            "weekdays": 30,
+            "weekend": 32
+        },
+        "Beyond": {
+            "weekdays": 32,
+            "weekend": 34
+        }
+    }
+}
